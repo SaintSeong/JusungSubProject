@@ -77,5 +77,8 @@
     <Image Include="..\..\..\logo.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="..\..\logo.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

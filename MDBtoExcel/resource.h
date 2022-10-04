@@ -36,6 +36,11 @@
 #define IDC_LIST_COLUMN                 1025
 #define IDC_BUTTON_CHANGE               1026
 #define IDC_EDIT_MODIFY                 1027
+#define IDC_BUTTON_Seperate             1028
+#define IDC_RADIO_Seperate_Yes          1029
+#define IDC_RADIO_Seperatrate_No        1030
+#define IDC_EDIT1                       1031
+#define IDC_EDIT_TotalRows              1031
 
 // Next default values for new objects
 // 
@@ -43,7 +48,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1028
+#define _APS_NEXT_CONTROL_VALUE         1032
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

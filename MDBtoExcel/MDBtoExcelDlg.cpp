@@ -75,6 +75,8 @@ void CMDBtoExcelDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_TABLE, m_ctrlComboTable);
 	DDX_Control(pDX, IDC_LIST_FIELD, m_ctrlCheckList);
 	DDX_Control(pDX, IDC_PROGRESS_SAVE, m_ctrlProgSave);
+	DDX_Control(pDX, IDC_EDIT_TotalRows, m_ctrlEditTotalRows);
+	DDX_Control(pDX, IDC_RADIO_Seperate_Yes, m_ctrlRadioSeperate);
 }
 
 BEGIN_MESSAGE_MAP(CMDBtoExcelDlg, CDialogEx)
@@ -269,25 +271,30 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 	// ---------------------------------------------------------------------------------
 
 	m_ctrlComboTable.SetCurSel(0);
+	m_ctrlComboTable.GetLBText(0, m_strCurrentTable);
 
-	CDBVariant vtval;
-	CString sqlCommand; // sql 명령
+	CString strSQLCommand; // sql 명령
+	CString strTotalRecord;
 
 	// -----------------------------------------------------------------------------
 	// Count Total Record
-	sqlCommand.Format(_T("Select count(*) from %s"), m_strCurrentTable);
-	m_tbRecordSet.Open(CRecordset::forwardOnly, _T("Select count(*) from SV_DVVAL"));
+	CDBVariant vtval;
+	strSQLCommand.Format(_T("Select count(*) from %s"), m_strCurrentTable);
+	m_tbRecordSet.Open(CRecordset::forwardOnly, strSQLCommand);
 	m_tbRecordSet.GetFieldValue((short)0, vtval);
 	m_nTotalRecord = vtval.m_lVal;
 	m_tbRecordSet.Close();
 	// -----------------------------------------------------------------------------
 
+	strTotalRecord.Format(_T("%d"), m_nTotalRecord);
+	m_ctrlEditTotalRows.SetWindowText(strTotalRecord);
+
 	// -----------------------------------------------------------------------------
 	// Show Field on the CheckListBox
 	m_ctrlComboTable.GetLBText(m_ctrlComboTable.GetCurSel(), m_strCurrentTable);
-	sqlCommand.Format(_T("Select * From %s"), m_strCurrentTable);
+	strSQLCommand.Format(_T("Select * From %s"), m_strCurrentTable);
 
-	m_tbRecordSet.Open(CRecordset::dynaset, sqlCommand);
+	m_tbRecordSet.Open(CRecordset::dynaset, strSQLCommand);
 
 	short nFieldCount = m_tbRecordSet.GetODBCFieldCount();
 	CODBCFieldInfo fieldInfo = { 0 };
@@ -313,23 +320,27 @@ void CMDBtoExcelDlg::OnCbnSelchangeComboTable()
 	//-------------------------------------------
 
 	CDBVariant vtval;
-	CString sqlCommand; // sql 명령
+	CString strSQLCommand; // sql 명령
+	CString strTotalRecord;
 
 	m_ctrlComboTable.GetLBText(m_ctrlComboTable.GetCurSel(), m_strCurrentTable);
 	
 	// -----------------------------------------------------------------------------
 	// 총 레코드 값 가져오기
-	sqlCommand.Format(_T("Select count(*) from %s"), m_strCurrentTable);
-	m_tbRecordSet.Open(CRecordset::forwardOnly, sqlCommand);
+	strSQLCommand.Format(_T("Select count(*) from %s"), m_strCurrentTable);
+	m_tbRecordSet.Open(CRecordset::forwardOnly, strSQLCommand);
 	m_tbRecordSet.GetFieldValue((short)0, vtval);
 	m_nTotalRecord = vtval.m_lVal;
 	m_tbRecordSet.Close();
 	// -----------------------------------------------------------------------------
 
+	strTotalRecord.Format(_T("%d"), m_nTotalRecord);
+	m_ctrlEditTotalRows.SetWindowText(strTotalRecord);
+
 	// -----------------------------------------------------------------------------
 	// CheckListBox에 필드 표시
-	sqlCommand.Format(_T("Select * From %s"), m_strCurrentTable);
-	m_tbRecordSet.Open(CRecordset::dynaset, sqlCommand);
+	strSQLCommand.Format(_T("Select * From %s"), m_strCurrentTable);
+	m_tbRecordSet.Open(CRecordset::dynaset, strSQLCommand);
 
 	short nFieldCount = m_tbRecordSet.GetODBCFieldCount();
 	CODBCFieldInfo fieldInfo = { 0 };

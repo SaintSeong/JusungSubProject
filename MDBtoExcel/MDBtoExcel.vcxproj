@@ -214,6 +214,7 @@
   <ItemGroup>
     <Image Include="..\..\..\img.bmp" />
     <Image Include="..\..\..\logo.bmp" />
+    <Image Include="..\..\logo.bmp" />
     <Image Include="img.bmp" />
     <Image Include="res\1.ico" />
     <Image Include="res\MDBtoExcel.ico" />
