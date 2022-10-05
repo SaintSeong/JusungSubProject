@@ -2,3 +2,6 @@
 MDBtoExcel/bin/
 MDBtoExcel/include/
 MDBtoExcel/lib/
+.vs/
+x64/
+MDBtoExcel/x64/
