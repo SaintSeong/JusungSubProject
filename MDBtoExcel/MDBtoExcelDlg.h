@@ -28,7 +28,6 @@ public:
 
 // 구현입니다.
 private:
-	int m_nCheckedCount;
 
 protected:
 	HICON m_hIcon;
@@ -40,16 +39,19 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnBnClickedBtnOpen();
-	afx_msg void OnBnClickedBtnConnect();
-	afx_msg void OnBnClickedButtonSave();
-	afx_msg void OnCbnSelchangeComboTable();
-	afx_msg void OnBnClickedButtonChange();
 
 	void GetFieldString();
 	const char* ConvertUTF8(CString strConvert);
 	int GetCheckCount() const;
 	int m_nTotalRecord;
+	int m_nCheckedCount;
+
+	afx_msg void OnBnClickedBtnOpen();
+	afx_msg void OnBnClickedBtnConnect();
+	afx_msg void OnBnClickedButtonSave();
+	afx_msg void OnCbnSelchangeComboTable();
+	afx_msg void OnBnClickedButtonChange();
+	afx_msg void OnBnClickedCheckSeperate();
 
 	CString m_strPath;
 	CString m_strPW;
@@ -71,5 +73,5 @@ public:
 	
 	
 	CEdit m_ctrlEditTotalRows;
-	CButton m_ctrlRadioSeperate;
+	CButton m_ctrlCheckSeperate;
 };

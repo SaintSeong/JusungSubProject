@@ -76,7 +76,7 @@ void CMDBtoExcelDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_FIELD, m_ctrlCheckList);
 	DDX_Control(pDX, IDC_PROGRESS_SAVE, m_ctrlProgSave);
 	DDX_Control(pDX, IDC_EDIT_TotalRows, m_ctrlEditTotalRows);
-	DDX_Control(pDX, IDC_RADIO_Seperate_Yes, m_ctrlRadioSeperate);
+	DDX_Control(pDX, IDC_CHECK_Seperate, m_ctrlCheckSeperate);
 }
 
 BEGIN_MESSAGE_MAP(CMDBtoExcelDlg, CDialogEx)
@@ -88,6 +88,7 @@ BEGIN_MESSAGE_MAP(CMDBtoExcelDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CMDBtoExcelDlg::OnBnClickedButtonSave)
 	ON_CBN_SELCHANGE(IDC_COMBO_TABLE, &CMDBtoExcelDlg::OnCbnSelchangeComboTable)
 	ON_BN_CLICKED(IDC_BUTTON_CHANGE, &CMDBtoExcelDlg::OnBnClickedButtonChange)
+	ON_BN_CLICKED(IDC_CHECK_Seperate, &CMDBtoExcelDlg::OnBnClickedCheckSeperate)
 END_MESSAGE_MAP()
 
 
@@ -487,3 +488,14 @@ void CMDBtoExcelDlg::GetFieldString()
 // -----------------------------------------------------------------------
 
 
+void CMDBtoExcelDlg::OnBnClickedCheckSeperate()
+{
+	if (m_ctrlCheckSeperate.GetCheck() == BST_CHECKED)
+	{
+		GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(TRUE);
+	}
+	else
+	{
+		GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(FALSE);
+	}
+}
