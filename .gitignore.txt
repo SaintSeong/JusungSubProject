@@ -1,4 +1,4 @@
 ## Ignore Folder
-MDBtoExcel/bin
-MDBtoExcel/include
-MDBtoExcel/lib
+MDBtoExcel/bin/
+MDBtoExcel/include/
+MDBtoExcel/lib/
