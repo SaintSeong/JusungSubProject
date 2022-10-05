@@ -12,6 +12,7 @@
 #define IDI_JUSUNG                      135
 #define IDB_BITMAP2                     137
 #define IDB_BITMAP_LOGO                 137
+#define IDD_DIALOG_SeperateSheet        138
 #define IDC_BTN_OPEN                    1000
 #define IDC_BTN_CONNECT                 1001
 #define IDC_BTN_SELECT                  1002
@@ -38,16 +39,17 @@
 #define IDC_EDIT_MODIFY                 1027
 #define IDC_BUTTON_Seperate             1028
 #define IDC_EDIT_TotalRows              1031
-#define IDC_CHECK1                      1032
 #define IDC_CHECK_Seperate              1032
+#define IDC_LIST1                       1033
+#define IDC_LIST_Sheet                  1033
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        138
+#define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1033
+#define _APS_NEXT_CONTROL_VALUE         1034
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

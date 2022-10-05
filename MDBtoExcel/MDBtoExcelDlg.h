@@ -71,7 +71,6 @@ public:
 	std::vector<lxw_worksheet*>m_arrPtSheet;
 	lxw_workbook* m_workbook;
 	
-	
 	CEdit m_ctrlEditTotalRows;
 	CButton m_ctrlCheckSeperate;
 };

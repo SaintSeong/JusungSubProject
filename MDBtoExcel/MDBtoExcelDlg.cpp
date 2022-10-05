@@ -370,7 +370,8 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 	);
 
 	if (dlgSaveFile.DoModal() == IDOK)
-	{	
+	{
+
 		m_workbook = workbook_new(ConvertUTF8(dlgSaveFile.GetPathName()));
 		m_arrPtSheet.push_back(workbook_add_worksheet(m_workbook, "test1"));
 
@@ -458,10 +459,9 @@ void CMDBtoExcelDlg::OnBnClickedButtonChange()
 // Cstring -> wchar -> char
 const char* CMDBtoExcelDlg::ConvertUTF8(CString strConvert)
 {
-	const WCHAR* pszFoo = (const WCHAR*)strConvert;
 	char strUtf8[1024] = { 0, };
-	int nLen = WideCharToMultiByte(CP_UTF8, 0, pszFoo, lstrlenW(pszFoo), NULL, 0, NULL, NULL);
-	WideCharToMultiByte(CP_UTF8, 0, pszFoo, lstrlenW(pszFoo), strUtf8, nLen, NULL, NULL);
+	int nLen = WideCharToMultiByte(CP_UTF8, 0, strConvert, lstrlenW(strConvert), NULL, 0, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, strConvert, lstrlenW(strConvert), strUtf8, nLen, NULL, NULL);
 
 	return strUtf8;
 }
