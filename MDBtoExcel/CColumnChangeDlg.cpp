@@ -91,7 +91,7 @@ BOOL CColumnChangeDlg::OnInitDialog()
 		if (dlgParent->m_ctrlCheckList.GetCheck(nfield) == BST_CHECKED)
 		{
 			dlgParent->m_ctrlCheckList.GetText(nfield, strCoulumn);
-			m_ctrlCoulumnList.InsertItem(nfield, strCoulumn);
+			m_ctrlCoulumnList.InsertItem(m_nChecked, strCoulumn);
 			m_nChecked++;
 		}
 	}

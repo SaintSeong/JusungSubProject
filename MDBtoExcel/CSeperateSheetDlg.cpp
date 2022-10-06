@@ -24,7 +24,6 @@ CSeperateSheetDlg::~CSeperateSheetDlg()
 void CSeperateSheetDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LIST_Sheet, m_ctrlListSheet);
 }
 
 

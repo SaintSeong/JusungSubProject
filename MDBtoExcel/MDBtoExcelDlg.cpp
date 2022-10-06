@@ -240,16 +240,16 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 		return;
 	}
 	AfxMessageBox(_T("연결이 성공하였습니다."));
-
+	
+	// ---------------------------------------------------------------------------------
+	// 기본적인 ODBC API를 이용하여 MDB 파일의 Table List 가져오기
 	HSTMT hStmt;
 	SQLLEN lLen;
 	CString strUnicode;
 
 	char pcName[256];
 	int nIdx = 0;
-	
-	// ---------------------------------------------------------------------------------
-	// 기본적인 ODBC API를 이용하여 MDB 파일의 Table List 가져오기
+
 	SQLAllocStmt(m_db.m_hdbc, &hStmt);
 	if (SQLTables(hStmt, NULL, 0, NULL, 0, NULL, 0, _T("TABLE"), SQL_NTS) != SQL_ERROR)
 	{ /* OK */

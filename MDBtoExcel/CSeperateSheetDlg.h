@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "afxdialogex.h"
-#include "CGridListCtrlEx/CGridListCtrlGroups.h"
 
 
 // CSeperateSheetDlg 대화 상자
@@ -23,5 +22,4 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	CGridListCtrlGroups m_ctrlListSheet;
 };
