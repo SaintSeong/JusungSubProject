@@ -70,13 +70,14 @@ CMDBtoExcelDlg::~CMDBtoExcelDlg()
 void CMDBtoExcelDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT_FILE, m_strPath);
 	DDX_Text(pDX, IDC_EDIT_PW, m_strPW);
 	DDX_Control(pDX, IDC_COMBO_TABLE, m_ctrlComboTable);
 	DDX_Control(pDX, IDC_LIST_FIELD, m_ctrlCheckList);
 	DDX_Control(pDX, IDC_PROGRESS_SAVE, m_ctrlProgSave);
 	DDX_Control(pDX, IDC_EDIT_TotalRows, m_ctrlEditTotalRows);
 	DDX_Control(pDX, IDC_CHECK_Seperate, m_ctrlCheckSeperate);
+	DDX_Control(pDX, IDC_EDIT_Rows, m_ctrlEditRows);
+	DDX_Control(pDX, IDC_EDIT_FILE, m_ctrlEditFileName);
 }
 
 BEGIN_MESSAGE_MAP(CMDBtoExcelDlg, CDialogEx)
@@ -89,6 +90,7 @@ BEGIN_MESSAGE_MAP(CMDBtoExcelDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_TABLE, &CMDBtoExcelDlg::OnCbnSelchangeComboTable)
 	ON_BN_CLICKED(IDC_BUTTON_CHANGE, &CMDBtoExcelDlg::OnBnClickedButtonChange)
 	ON_BN_CLICKED(IDC_CHECK_Seperate, &CMDBtoExcelDlg::OnBnClickedCheckSeperate)
+	ON_BN_CLICKED(IDC_BUTTON_Seperate, &CMDBtoExcelDlg::OnBnClickedButtonSeperate)
 END_MESSAGE_MAP()
 
 
@@ -125,6 +127,7 @@ BOOL CMDBtoExcelDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	m_ctrlProgSave.SetRange(1, 100);
+	m_ctrlEditRows.SetCueBanner(_T("Input Rows"));
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -191,7 +194,7 @@ void CMDBtoExcelDlg::OnPaint()
 		//	2) StretchBlt
 		//	3) TransparentBlt
 		//	4) AlphaBlend
-		ViewDC.TransparentBlt(0, 0, 400, 130,
+		ViewDC.TransparentBlt(0, 0, 380, 130,
 			&MemDC,
 			0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight,
 			RGB(255,255,255));
@@ -221,15 +224,14 @@ void CMDBtoExcelDlg::OnBnClickedBtnOpen()
 	if (dlgfile.DoModal() == IDOK)
 	{
 		m_strPath = dlgfile.GetPathName();
+		m_ctrlEditFileName.SetWindowText(dlgfile.GetFileName());
 	}
-	UpdateData(0);
 }
 
 // MDB 연결
 void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 {
 
-	UpdateData(1);
 	CString strConnection;
 	strConnection.Format(_T("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=%s;PWD=%s")
 		, m_strPath, m_strPW);
@@ -493,9 +495,17 @@ void CMDBtoExcelDlg::OnBnClickedCheckSeperate()
 	if (m_ctrlCheckSeperate.GetCheck() == BST_CHECKED)
 	{
 		GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(TRUE);
+		m_ctrlEditRows.EnableWindow(TRUE);
 	}
 	else
 	{
 		GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(FALSE);
+		m_ctrlEditRows.EnableWindow(FALSE);
 	}
+}
+
+
+void CMDBtoExcelDlg::OnBnClickedButtonSeperate()
+{
+	m_dlgSeperate.DoModal();
 }

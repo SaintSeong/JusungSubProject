@@ -140,21 +140,15 @@ void CColumnChangeDlg::OnNMDblclkListColumn(NMHDR* pNMHDR, LRESULT* pResult)
 	m_nISavedItem = pNMITEM->iItem; // Row 인덱스 번호
 	m_nISavedSubitem = pNMITEM->iSubItem; // Col 인덱스 번호
 
-	if (pNMITEM->iItem != -1 && pNMITEM->iSubItem != 0) { // Row 인덱스가 -1이 아닌 경우 => Row Full Select 동작 x
-
-		CRect rect;
-
+	if (pNMITEM->iItem != -1 && pNMITEM->iSubItem != 0) { 
+		// Row 인덱스가 -1이 아닌 경우 => Row Full Select 동작 x
+		
 		/*
 		LVIR_BOUNDS : 아이콘 및 레이블을 포함하여 전체 항목의 경계 사각형을 반환합니다.
 		LVIR_ICON	: 아이콘 또는 작은 아이콘의 경계 사각형을 반환합니다.
 		LVIR_LABEL	: 항목 텍스트의 경계 사각형을 반환합니다.
 		*/
-
-		//if (pNMITEM->iSubItem == 0)
-		//{
-		//	m_ctrlCoulumnList.GetItemRect(pNMITEM->iItem, rect, LVIR_BOUNDS);
-		//	rect.right = rect.left + m_ctrlCoulumnList.GetColumnWidth(0);
-		//}
+		CRect rect;
 
 		m_ctrlCoulumnList.GetSubItemRect(pNMITEM->iItem, pNMITEM->iSubItem, LVIR_BOUNDS, rect);
 

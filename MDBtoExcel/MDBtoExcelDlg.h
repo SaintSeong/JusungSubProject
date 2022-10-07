@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "CColumnChangeDlg.h"
+#include "CSeperateSheetDlg.h"
 
 // CMDBtoExcelDlg 대화 상자
 class CMDBtoExcelDlg : public CDialogEx
@@ -52,6 +53,7 @@ public:
 	afx_msg void OnCbnSelchangeComboTable();
 	afx_msg void OnBnClickedButtonChange();
 	afx_msg void OnBnClickedCheckSeperate();
+	afx_msg void OnBnClickedButtonSeperate();
 
 	CString m_strPath;
 	CString m_strPW;
@@ -67,10 +69,15 @@ public:
 	CProgressCtrl m_ctrlProgSave;
 
 	CColumnChangeDlg m_dlgChange;
+	CSeperateSheetDlg m_dlgSeperate;
 
 	std::vector<lxw_worksheet*>m_arrPtSheet;
 	lxw_workbook* m_workbook;
 	
 	CEdit m_ctrlEditTotalRows;
+	CEdit m_ctrlEditRows;
+	CEdit m_ctrlEditFileName;
 	CButton m_ctrlCheckSeperate;
+	
+	
 };

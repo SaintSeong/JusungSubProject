@@ -46,7 +46,7 @@ public:
 
 	void AddColour( CString strName, COLORREF crColour );
 
-	// Overrides
+// Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CColourPickerCB)
 	protected:
