@@ -221,6 +221,7 @@
     <Image Include="..\..\logo.bmp" />
     <Image Include="img.bmp" />
     <Image Include="res\1.ico" />
+    <Image Include="res\logo.bmp" />
     <Image Include="res\MDBtoExcel.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
