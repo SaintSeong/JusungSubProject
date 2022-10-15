@@ -1,5 +1,4 @@
-﻿
-// MDBtoExcelDlg.h: 헤더 파일
+﻿// MDBtoExcelDlg.h: 헤더 파일
 //
 
 #pragma once
@@ -9,7 +8,9 @@
 
 #include "CColumnChangeDlg.h"
 #include "CSeperateSheetDlg.h"
+#include "CColumnName.h"
 
+using namespace std;
 // CMDBtoExcelDlg 대화 상자
 class CMDBtoExcelDlg : public CDialogEx
 {
@@ -43,10 +44,8 @@ public:
 
 	void GetFieldString();
 	const char* ConvertUTF8(CString strConvert);
-	int GetCheckCount() const;
 	int m_nTotalRecord;
-	int m_nCheckedCount;
-
+	BOOL m_bListCheckState;
 	afx_msg void OnBnClickedBtnOpen();
 	afx_msg void OnBnClickedBtnConnect();
 	afx_msg void OnBnClickedButtonSave();
@@ -54,6 +53,7 @@ public:
 	afx_msg void OnBnClickedButtonChange();
 	afx_msg void OnBnClickedCheckSeperate();
 	afx_msg void OnBnClickedButtonSeperate();
+	afx_msg void OnHdnItemclickListColumn(NMHDR* pNMHDR, LRESULT* pResult);
 
 	CString m_strPath;
 	CString m_strPW;
@@ -63,21 +63,18 @@ public:
 	CDatabase m_db;
 	CRecordset m_tbRecordSet;
 
-	CComboBox m_ctrlComboTable;
-
-	CCheckListBox m_ctrlCheckList;
-	CProgressCtrl m_ctrlProgSave;
-
 	CColumnChangeDlg m_dlgChange;
 	CSeperateSheetDlg m_dlgSeperate;
 
-	std::vector<lxw_worksheet*>m_arrPtSheet;
+	vector<CColumnName>m_arrCColumn;
+	vector<lxw_worksheet*>m_arrPtSheet;
 	lxw_workbook* m_workbook;
 	
 	CEdit m_ctrlEditTotalRows;
 	CEdit m_ctrlEditRows;
 	CEdit m_ctrlEditFileName;
 	CButton m_ctrlCheckSeperate;
-	
-	
+	CComboBox m_ctrlComboTable;
+	CProgressCtrl m_ctrlProgSave;
+	CListCtrl m_ctrlListColumn;
 };

@@ -21,7 +21,6 @@ protected:
 	HICON m_hIcon;
 	// 생성된 메시지 맵 함수
 	virtual BOOL OnInitDialog();
-	virtual BOOL DestroyWindow();
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 	DECLARE_MESSAGE_MAP()
 
@@ -29,12 +28,7 @@ public:
 	
 	int m_nISavedItem;
 	int m_nISavedSubitem;
-	int m_nChecked;
-
-	CString* m_ArrStr;
 	CListCtrl m_ctrlCoulumnList;
-	
-	afx_msg void OnNMDblclkListColumn(NMHDR* pNMHDR, LRESULT* pResult);
 	BOOL PreTranslateMessage(MSG* pMsg);
-
+	afx_msg void OnNMDblclkListColumn(NMHDR* pNMHDR, LRESULT* pResult);
 };
