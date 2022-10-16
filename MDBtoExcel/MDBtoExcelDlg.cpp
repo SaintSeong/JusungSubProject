@@ -440,10 +440,8 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 {
 
 	int nLen = 0;
-	//wchar_t strUnicode[1024] = { 0, };
-	char strUtf8[2000] = { 0, };
+	char strUtf8[1024] = { 0, };
 	CString strPathName;
-	CString strUnicode;
 
 	UpdateCheckState();
 	GetFieldString();
@@ -472,17 +470,25 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 		strQuery.Format(_T("select %s from %s"), m_strSelectedField, m_strCurrentTable);
 
 		m_tbRecordSet.Open(CRecordset::dynaset, strQuery);
-
 		// -----------------------------------------------------------------------------
 		// 엑셀 첫 번째 라인 Column 이름으로 설정
+		CODBCFieldInfo info;
+		CString strUnicode;
 		int nCount = (int)m_arrCColumn.size();
 		int nxlsxCol = 0;
+
+		vector<SWORD> arrDtype;
+		arrDtype.resize(0);
+
 		for (int nIdx = 0; nIdx < nCount; nIdx++)
 		{
 			if (m_arrCColumn[nIdx].m_bCheck)
 			{
 				strUnicode.Empty();
 				memset(strUtf8, 0, sizeof(strUtf8));
+
+				m_tbRecordSet.GetODBCFieldInfo(m_arrCColumn[nIdx].m_strOriginName, info);
+				arrDtype.push_back(info.m_nSQLType);
 				// -----------------------------------------------------------------------------
 				strUnicode = m_arrCColumn[nIdx].m_strChangeName;
 				nLen = WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
@@ -490,7 +496,7 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 				WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
 					, strUtf8, nLen, NULL, NULL);
 				// -----------------------------------------------------------------------------
-				
+				// worksheet_set_column(m_arrPtSheet[0], 0, nxlsxCol, info.m_nPrecision, NULL);
 				worksheet_write_string(m_arrPtSheet[0], 0, nxlsxCol, strUtf8, NULL);
 				nxlsxCol++;
 			}
@@ -501,21 +507,31 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 		//  엑셀에 데이터 작성
 		CString strValue;
 		int nRow = 1;
-
+		int nValue = 0;
 		while (!(m_tbRecordSet.IsEOF()))
 		{
 			for (int nCol = 0; nCol < nxlsxCol; nCol++)
 			{
-				strUnicode.Empty();
-				memset(strUtf8, 0, sizeof(strUtf8));
 				m_tbRecordSet.GetFieldValue(short(nCol), strUnicode);
-				// -----------------------------------------------------------------------------
-				nLen = WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
-					, NULL, 0, NULL, NULL);
-				WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
-					, strUtf8, nLen, NULL, NULL);;
-				// ---------------------------------------------------------------------------
-				worksheet_write_string(m_arrPtSheet[0], nRow, nCol, strUtf8, NULL);
+				
+				if (arrDtype[nCol] == SQL_NUMERIC || arrDtype[nCol] == SQL_INTEGER
+					|| arrDtype[nCol] == SQL_SMALLINT)
+				{
+					nValue = _ttoi(strUnicode);
+					worksheet_write_number(m_arrPtSheet[0], nRow, nCol, nValue, NULL);
+				}
+				else
+				{
+					// -----------------------------------------------------------------------------
+					nLen = WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
+						, NULL, 0, NULL, NULL);
+					WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
+						, strUtf8, nLen, NULL, NULL);;
+					// ---------------------------------------------------------------------------
+					worksheet_write_string(m_arrPtSheet[0], nRow, nCol, strUtf8, NULL);
+					strUnicode.Empty();
+					memset(strUtf8, 0, sizeof(strUtf8));
+				}	
 			}
 			nRow++;
 			m_ctrlProgSave.SetPos(nRow);
