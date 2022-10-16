@@ -248,6 +248,8 @@ void CMDBtoExcelDlg::OnBnClickedBtnOpen()
 			{
 				m_db.Close();
 			}
+			m_arrCColumn.clear();
+			m_ctrlListColumn.DeleteAllItems();
 		}
 		
 	}
@@ -266,15 +268,16 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 		AfxMessageBox(_T("연결이 실패하였습니다."));
 		return;
 	}
+
 	AfxMessageBox(_T("연결이 성공하였습니다."));
 	GetDlgItem(IDC_BTN_CONNECT)->EnableWindow(FALSE);
 	GetDlgItem(IDC_EDIT_PW)->EnableWindow(FALSE);
 	GetDlgItem(IDC_COMBO_TABLE)->EnableWindow(TRUE);
-	GetDlgItem(IDC_CHECK_Seperate)->EnableWindow(TRUE);
+	//GetDlgItem(IDC_CHECK_Seperate)->EnableWindow(TRUE);
 	GetDlgItem(IDC_LIST_COLUMN)->EnableWindow(TRUE);
 	GetDlgItem(IDC_EDIT_TotalRows)->EnableWindow(TRUE);
-	GetDlgItem(IDC_EDIT_Rows)->EnableWindow(TRUE);
-	GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(TRUE);
+	//GetDlgItem(IDC_EDIT_Rows)->EnableWindow(TRUE);
+	//GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_CHANGE)->EnableWindow(TRUE);
 	
@@ -436,90 +439,136 @@ void CMDBtoExcelDlg::OnHdnItemclickListColumn(NMHDR* pNMHDR, LRESULT* pResult)
 void CMDBtoExcelDlg::OnBnClickedButtonSave()
 {
 
-	//int len = 0;
-	//wchar_t strUnicode[256] = { 0, };
-	//char strMultibyte[256] = { 0, };
+	int nLen = 0;
+	//wchar_t strUnicode[1024] = { 0, };
+	char strUtf8[2000] = { 0, };
+	CString strPathName;
+	CString strUnicode;
 
-	//CFileDialog dlgSaveFile(0, _T("*.xlsx")
-	//	, 0
-	//	, OFN_OVERWRITEPROMPT | OFN_LONGNAMES
-	//	, _T("Excel Files (*.xlsx)|*.xlsx||")
-	//);
+	UpdateCheckState();
+	GetFieldString();
 
-	//if (dlgSaveFile.DoModal() == IDOK)
-	//{
+	CFileDialog dlgSaveFile(0, _T("*.xlsx")
+		, 0
+		, OFN_OVERWRITEPROMPT | OFN_LONGNAMES
+		, _T("Excel Files (*.xlsx)|*.xlsx||")
+	);
 
-	//	m_workbook = workbook_new(ConvertUTF8(dlgSaveFile.GetPathName()));
-	//	m_arrPtSheet.push_back(workbook_add_worksheet(m_workbook, "test1"));
+	if (m_strSelectedField == _T(""))
+	{
+		AfxMessageBox(_T("선택된 Column이 없습니다."));
+	}
 
-	//	CString strQuery;
-	//	GetFieldString(); // 여러 Field 한 문자열로 합치기
-	//	strQuery.Format(_T("select %s from %s"), m_strSelectedField, m_strCurrentTable);
+	else if (dlgSaveFile.DoModal() == IDOK)
+	{
+		strPathName = dlgSaveFile.GetPathName();
+		nLen = WideCharToMultiByte(CP_UTF8, 0, strPathName, lstrlenW(strPathName), NULL, 0, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, strPathName, lstrlenW(strPathName), strUtf8, nLen, NULL, NULL);
 
-	//	m_tbRecordSet.Open(CRecordset::dynaset, strQuery);
-	//	
-	//	int nRow = 1;
-	//	int nTotalField = m_tbRecordSet.GetODBCFieldCount();
+		m_workbook = workbook_new(strUtf8);
+		m_arrPtSheet.push_back(workbook_add_worksheet(m_workbook, "test1"));
 
-	//	CString strValue;
+		CString strQuery;
+		strQuery.Format(_T("select %s from %s"), m_strSelectedField, m_strCurrentTable);
 
-	//	// -----------------------------------------------------------------------------
-	//	// 엑셀 첫 번째 라인 Column 이름으로 설정
-	//	for (int xlsxCol = 0; xlsxCol < m_nCheckedCount; xlsxCol++)
-	//	{
-	//		// -----------------------------------------------------------------------------
-	//		// Unicode convert to MultiByte
-	//		wcscpy_s(strUnicode, 256, m_dlgChange.m_ArrStr[xlsxCol].GetString());
-	//		len = WideCharToMultiByte(CP_ACP, 0, strUnicode, -1, NULL, 0, NULL, NULL);
-	//		WideCharToMultiByte(CP_ACP, 0, strUnicode, -1, strMultibyte, len, NULL, NULL);
-	//		// -----------------------------------------------------------------------------
-	//		//worksheet_write_string(m_arrPtSheet[0], 0, xlsxCol, strMultibyte, NULL);
-	//		worksheet_write_string(m_arrPtSheet[0], 0, xlsxCol
-	//			, ConvertUTF8(m_dlgChange.m_ArrStr[xlsxCol].GetString()), NULL);
-	//	}
-	//	// -----------------------------------------------------------------------------
+		m_tbRecordSet.Open(CRecordset::dynaset, strQuery);
 
-	//	// -----------------------------------------------------------------------------
-	//	// 엑셀에 데이터 작성
-	//	while (!(m_tbRecordSet.IsEOF()))
-	//	{
-	//		for (int nCol = 0; nCol < nTotalField; nCol++)
-	//		{
-	//			m_tbRecordSet.GetFieldValue(short(nCol), strValue);
-	//			// ---------------------------------------------------------------------------
-	//			// Unicode convert to MultiByte
-	//			wcscpy_s(strUnicode, 256, strValue);
-	//			len = WideCharToMultiByte(CP_ACP, 0, strUnicode, -1, NULL, 0, NULL, NULL);
-	//			WideCharToMultiByte(CP_ACP, 0, strUnicode, -1, strMultibyte, len, NULL, NULL);
-	//			// ---------------------------------------------------------------------------
-	//			worksheet_write_string(m_arrPtSheet[0], nRow, nCol, strMultibyte, NULL);
-	//		}
-	//		
-	//		nRow++;
-	//		m_ctrlProgSave.SetPos(nRow);
-	//		m_tbRecordSet.MoveNext();
-	//	}
-	//	// -----------------------------------------------------------------------------
-	//}
-	//
-	//lxw_error error_state = workbook_close(m_workbook);
-	//if (!(strcmp(lxw_strerror(error_state), "No error.")))
-	//{
-	//	AfxMessageBox(_T("파일이 생성되었습니다."));
-	//}
-	//else
-	//{ 
-	//	MessageBoxA(NULL, lxw_strerror(error_state), "Error", MB_OK);
-	//}
+		// -----------------------------------------------------------------------------
+		// 엑셀 첫 번째 라인 Column 이름으로 설정
+		int nCount = (int)m_arrCColumn.size();
+		int nxlsxCol = 0;
+		for (int nIdx = 0; nIdx < nCount; nIdx++)
+		{
+			if (m_arrCColumn[nIdx].m_bCheck)
+			{
+				strUnicode.Empty();
+				memset(strUtf8, 0, sizeof(strUtf8));
+				// -----------------------------------------------------------------------------
+				strUnicode = m_arrCColumn[nIdx].m_strChangeName;
+				nLen = WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
+					, NULL, 0, NULL, NULL);
+				WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
+					, strUtf8, nLen, NULL, NULL);
+				// -----------------------------------------------------------------------------
+				
+				worksheet_write_string(m_arrPtSheet[0], 0, nxlsxCol, strUtf8, NULL);
+				nxlsxCol++;
+			}
+		}
+		// -----------------------------------------------------------------------------
 
-	//m_ctrlProgSave.SetPos(0);
-	//m_tbRecordSet.Close();
+		// -----------------------------------------------------------------------------
+		//  엑셀에 데이터 작성
+		CString strValue;
+		int nRow = 1;
+
+		while (!(m_tbRecordSet.IsEOF()))
+		{
+			for (int nCol = 0; nCol < nxlsxCol; nCol++)
+			{
+				strUnicode.Empty();
+				memset(strUtf8, 0, sizeof(strUtf8));
+				m_tbRecordSet.GetFieldValue(short(nCol), strUnicode);
+				// -----------------------------------------------------------------------------
+				nLen = WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
+					, NULL, 0, NULL, NULL);
+				WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
+					, strUtf8, nLen, NULL, NULL);;
+				// ---------------------------------------------------------------------------
+				worksheet_write_string(m_arrPtSheet[0], nRow, nCol, strUtf8, NULL);
+			}
+			nRow++;
+			m_ctrlProgSave.SetPos(nRow);
+			m_tbRecordSet.MoveNext();
+		}
+		// -----------------------------------------------------------------------------
+
+		lxw_error error_state = workbook_close(m_workbook);
+		if (!(strcmp(lxw_strerror(error_state), "No error.")))
+		{
+			AfxMessageBox(_T("파일이 생성되었습니다."));
+		}
+		else
+		{
+			MessageBoxA(NULL, lxw_strerror(error_state), "Error", MB_OK);
+		}
+	}
+
+	m_ctrlProgSave.SetPos(0);
+	m_tbRecordSet.Close();
 	
 }
 
 void CMDBtoExcelDlg::OnBnClickedButtonChange()
 {
-	int nCount = m_arrCColumn.size();
+	UpdateCheckState();
+	m_dlgChange.DoModal();
+}
+
+// -----------------------------------------------------------------------
+// CheckListBox에서 체크된 필드를 합치는 곳
+void CMDBtoExcelDlg::GetFieldString()
+{
+	m_strSelectedField.Empty();
+	int nCount = (int)m_arrCColumn.size();
+
+	for (int nfield = 0; nfield < nCount; nfield++)
+	{
+		if (m_arrCColumn[nfield].m_bCheck)
+		{
+			m_strSelectedField += m_arrCColumn[nfield].m_strChangeName;
+			m_strSelectedField += _T(",");
+		}
+	}
+	m_strSelectedField.Delete(m_strSelectedField.GetLength() - 1);
+}
+// -----------------------------------------------------------------------
+
+// -----------------------------------------------------------------------
+// Vector에 있는 CColumnName의 bState 상태 확인
+void CMDBtoExcelDlg::UpdateCheckState()
+{
+	int nCount = (int)m_arrCColumn.size();
 	for (int idx = 0; idx < nCount; idx++)
 	{
 		if (m_ctrlListColumn.GetCheck(idx))
@@ -528,40 +577,8 @@ void CMDBtoExcelDlg::OnBnClickedButtonChange()
 		}
 	}
 
-	m_dlgChange.DoModal();
-}
-// -----------------------------------------------------------------------------
-// Cstring -> wchar -> char
-const char* CMDBtoExcelDlg::ConvertUTF8(CString strConvert)
-{
-	char strUtf8[1024] = { 0, };
-	int nLen = WideCharToMultiByte(CP_UTF8, 0, strConvert, lstrlenW(strConvert), NULL, 0, NULL, NULL);
-	WideCharToMultiByte(CP_UTF8, 0, strConvert, lstrlenW(strConvert), strUtf8, nLen, NULL, NULL);
-
-	return strUtf8;
-}
-// -----------------------------------------------------------------------------
-
-// -----------------------------------------------------------------------
-// CheckListBox에서 체크된 필드를 합치는 곳
-void CMDBtoExcelDlg::GetFieldString()
-{
-	/*CString strfield;
-	m_strSelectedField.Empty();
-
-	for (int nfield = 0; nfield < m_ctrlCheckList.GetCount(); nfield++)
-	{
-		if (m_ctrlCheckList.GetCheck(nfield) == BST_CHECKED)
-		{
-			m_ctrlCheckList.GetText(nfield, strfield);
-			m_strSelectedField += strfield;
-			m_strSelectedField += _T(",");
-		}
-	}
-	m_strSelectedField.Delete(m_strSelectedField.GetLength() - 1);*/
 }
 // -----------------------------------------------------------------------
-
 
 void CMDBtoExcelDlg::OnBnClickedCheckSeperate()
 {

@@ -14,8 +14,8 @@ IMPLEMENT_DYNAMIC(CColumnChangeDlg, CDialogEx)
 
 CColumnChangeDlg::CColumnChangeDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_CHANGE_COLUMN, pParent)
-	, m_nISavedItem(0)
-	, m_nISavedSubitem(0)
+	, m_nISavedItem(-1)
+	, m_nISavedSubitem(-1)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_JUSUNG);
 }
@@ -82,7 +82,7 @@ BOOL CColumnChangeDlg::OnInitDialog()
 
 	CMDBtoExcelDlg* dlgParent = (CMDBtoExcelDlg*)GetParent();
 	
-	int nCount = dlgParent->m_arrCColumn.size();
+	int nCount = (int)dlgParent->m_arrCColumn.size();
 	for (int idx = 0; idx < nCount; idx++)
 	{
 		if (dlgParent->m_arrCColumn[idx].m_bCheck)
@@ -106,12 +106,9 @@ void CColumnChangeDlg::OnNMDblclkListColumn(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if (m_nISavedItem != -1 && m_nISavedSubitem != 0) {
 		// Row 인덱스가 -1이 아닌 경우 => Row Full Select 동작 x
-
-		/*
-		LVIR_BOUNDS : 아이콘 및 레이블을 포함하여 전체 항목의 경계 사각형을 반환합니다.
-		LVIR_ICON	: 아이콘 또는 작은 아이콘의 경계 사각형을 반환합니다.
-		LVIR_LABEL	: 항목 텍스트의 경계 사각형을 반환합니다.
-		*/
+		// LVIR_BOUNDS	: 아이콘 및 레이블을 포함하여 전체 항목의 경계 사각형을 반환합니다.
+		// LVIR_ICON		: 아이콘 또는 작은 아이콘의 경계 사각형을 반환합니다.
+		// LVIR_LABEL	: 항목 텍스트의 경계 사각형을 반환합니다.
 
 		CRect rect;
 		m_ctrlCoulumnList.GetSubItemRect(m_nISavedItem, m_nISavedSubitem, LVIR_BOUNDS, rect);
@@ -138,9 +135,9 @@ void CColumnChangeDlg::OnNMDblclkListColumn(NMHDR* pNMHDR, LRESULT* pResult)
 // 이벤트가 들어오면 ListBox에 텍스트 값 설정
 BOOL CColumnChangeDlg::PreTranslateMessage(MSG* pMsg)
 {
-	if (pMsg->message == WM_KEYDOWN || pMsg->message == WM_RBUTTONUP)
+	if (pMsg->message == WM_KEYDOWN)
 	{
-		if (pMsg->wParam == VK_RETURN || pMsg->wParam == MK_LBUTTON) // Enter 키
+		if (pMsg->wParam == VK_RETURN) // Enter 키
 		{
 			if (pMsg->hwnd == GetDlgItem(IDC_EDIT_MODIFY)->GetSafeHwnd())
 				// GetSafeHwnd() : 창의 창 핸들을 반환(부모창 반환)
@@ -159,7 +156,6 @@ BOOL CColumnChangeDlg::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
 		}
 	}
-
 	return CDialog::PreTranslateMessage(pMsg);
 }
 //--------------------------------------------------------------------------

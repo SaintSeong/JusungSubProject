@@ -43,7 +43,7 @@ protected:
 public:
 
 	void GetFieldString();
-	const char* ConvertUTF8(CString strConvert);
+	void UpdateCheckState();
 	int m_nTotalRecord;
 	BOOL m_bListCheckState;
 	afx_msg void OnBnClickedBtnOpen();
