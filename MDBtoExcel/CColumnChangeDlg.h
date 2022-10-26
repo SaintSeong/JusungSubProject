@@ -31,4 +31,5 @@ public:
 	CListCtrl m_ctrlCoulumnList;
 	BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnNMDblclkListColumn(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnBnClickedOk();
 };

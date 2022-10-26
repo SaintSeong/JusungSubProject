@@ -188,8 +188,6 @@
   <ItemGroup>
     <ClInclude Include="CColumnChangeDlg.h" />
     <ClInclude Include="CColumnName.h" />
-    <ClInclude Include="ColourPickerCB.h" />
-    <ClInclude Include="CSeperateSheetDlg.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MDBtoExcel.h" />
     <ClInclude Include="MDBtoExcelDlg.h" />
@@ -200,8 +198,6 @@
   <ItemGroup>
     <ClCompile Include="CColumnChangeDlg.cpp" />
     <ClCompile Include="CColumnName.cpp" />
-    <ClCompile Include="ColourPickerCB.cpp" />
-    <ClCompile Include="CSeperateSheetDlg.cpp" />
     <ClCompile Include="MDBtoExcel.cpp" />
     <ClCompile Include="MDBtoExcelDlg.cpp" />
     <ClCompile Include="pch.cpp">

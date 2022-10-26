@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "CColumnChangeDlg.h"
-#include "CSeperateSheetDlg.h"
 #include "CColumnName.h"
 
 using namespace std;
@@ -51,8 +50,6 @@ public:
 	afx_msg void OnBnClickedButtonSave();
 	afx_msg void OnCbnSelchangeComboTable();
 	afx_msg void OnBnClickedButtonChange();
-	afx_msg void OnBnClickedCheckSeperate();
-	afx_msg void OnBnClickedButtonSeperate();
 	afx_msg void OnHdnItemclickListColumn(NMHDR* pNMHDR, LRESULT* pResult);
 
 	CString m_strPath;
@@ -64,16 +61,13 @@ public:
 	CRecordset m_tbRecordSet;
 
 	CColumnChangeDlg m_dlgChange;
-	CSeperateSheetDlg m_dlgSeperate;
 
 	vector<CColumnName>m_arrCColumn;
-	vector<lxw_worksheet*>m_arrPtSheet;
-	lxw_workbook* m_workbook;
-	
+	vector<int>m_arrCheckIdx;
+
 	CEdit m_ctrlEditTotalRows;
 	CEdit m_ctrlEditRows;
 	CEdit m_ctrlEditFileName;
-	CButton m_ctrlCheckSeperate;
 	CComboBox m_ctrlComboTable;
 	CProgressCtrl m_ctrlProgSave;
 	CListCtrl m_ctrlListColumn;

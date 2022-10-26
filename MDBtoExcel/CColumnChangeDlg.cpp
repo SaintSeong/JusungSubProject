@@ -33,6 +33,7 @@ void CColumnChangeDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CColumnChangeDlg, CDialogEx)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_COLUMN, &CColumnChangeDlg::OnNMDblclkListColumn)
+	ON_BN_CLICKED(IDOK, &CColumnChangeDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 BOOL CColumnChangeDlg::OnInitDialog()
@@ -82,14 +83,13 @@ BOOL CColumnChangeDlg::OnInitDialog()
 
 	CMDBtoExcelDlg* dlgParent = (CMDBtoExcelDlg*)GetParent();
 	
-	int nCount = (int)dlgParent->m_arrCColumn.size();
+	int nCount = (int)dlgParent->m_arrCheckIdx.size();
 	for (int idx = 0; idx < nCount; idx++)
 	{
-		if (dlgParent->m_arrCColumn[idx].m_bCheck)
-		{
-			m_ctrlCoulumnList.InsertItem(idx, dlgParent->m_arrCColumn[idx].m_strOriginName);
-			m_ctrlCoulumnList.SetItemText(idx, 1, dlgParent->m_arrCColumn[idx].m_strChangeName);
-		}
+		m_ctrlCoulumnList.InsertItem(idx, 
+			dlgParent->m_arrCColumn[dlgParent->m_arrCheckIdx[idx]].m_strOriginName);
+		m_ctrlCoulumnList.SetItemText(idx, 1, 
+			dlgParent->m_arrCColumn[dlgParent->m_arrCheckIdx[idx]].m_strChangeName);
 	}
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -159,3 +159,18 @@ BOOL CColumnChangeDlg::PreTranslateMessage(MSG* pMsg)
 	return CDialog::PreTranslateMessage(pMsg);
 }
 //--------------------------------------------------------------------------
+
+
+void CColumnChangeDlg::OnBnClickedOk()
+{
+	CMDBtoExcelDlg* dlgParent = (CMDBtoExcelDlg*)GetParent();
+
+	int nCount = (int)dlgParent->m_arrCheckIdx.size();
+	for (int idx = 0; idx < nCount; idx++)
+	{
+		dlgParent->m_arrCColumn[dlgParent->m_arrCheckIdx[idx]].m_strChangeName
+			= m_ctrlCoulumnList.GetItemText(idx, 1);
+	}
+
+	CDialogEx::OnOK();
+}

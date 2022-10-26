@@ -36,12 +36,6 @@
     <ClInclude Include="CColumnChangeDlg.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="CSeperateSheetDlg.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ColourPickerCB.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="CColumnName.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -57,12 +51,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CColumnChangeDlg.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="CSeperateSheetDlg.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ColourPickerCB.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CColumnName.cpp">

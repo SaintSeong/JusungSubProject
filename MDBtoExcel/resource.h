@@ -12,7 +12,6 @@
 #define IDI_JUSUNG                      135
 #define IDB_BITMAP2                     137
 #define IDB_BITMAP_LOGO                 137
-#define IDD_DIALOG_SeperateSheet        138
 #define IDC_BTN_OPEN                    1000
 #define IDC_BTN_CONNECT                 1001
 #define IDC_BTN_SELECT                  1002
@@ -41,8 +40,6 @@
 #define IDC_EDIT_TotalRows              1031
 #define IDC_CHECK_Seperate              1032
 #define IDC_EDIT_Rows                   1034
-#define IDC_LIST_SheetModify            1035
-#define IDC_LIST1                       1036
 #define IDC_Combo_Color                 2000
 
 // Next default values for new objects

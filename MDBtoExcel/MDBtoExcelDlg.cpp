@@ -12,8 +12,6 @@
 #define new DEBUG_NEW
 #endif
 
-#define MAX_IDX 6
-
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
 class CAboutDlg : public CDialogEx
@@ -56,10 +54,10 @@ CMDBtoExcelDlg::CMDBtoExcelDlg(CWnd* pParent /*=nullptr*/)
 	, m_tbRecordSet(&m_db)
 	, m_strCurrentTable(_T(""))
 	, m_strSelectedField(_T(""))
-	, m_workbook{0}
 	, m_nTotalRecord(0)
 	, m_bListCheckState(FALSE)
 {
+	m_arrCheckIdx.clear();
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_JUSUNG);
 }
 
@@ -74,8 +72,6 @@ void CMDBtoExcelDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_TABLE, m_ctrlComboTable);
 	DDX_Control(pDX, IDC_PROGRESS_SAVE, m_ctrlProgSave);
 	DDX_Control(pDX, IDC_EDIT_TotalRows, m_ctrlEditTotalRows);
-	DDX_Control(pDX, IDC_CHECK_Seperate, m_ctrlCheckSeperate);
-	DDX_Control(pDX, IDC_EDIT_Rows, m_ctrlEditRows);
 	DDX_Control(pDX, IDC_EDIT_FILE, m_ctrlEditFileName);
 	DDX_Control(pDX, IDC_LIST_COLUMN, m_ctrlListColumn);
 }
@@ -89,8 +85,6 @@ BEGIN_MESSAGE_MAP(CMDBtoExcelDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CMDBtoExcelDlg::OnBnClickedButtonSave)
 	ON_CBN_SELCHANGE(IDC_COMBO_TABLE, &CMDBtoExcelDlg::OnCbnSelchangeComboTable)
 	ON_BN_CLICKED(IDC_BUTTON_CHANGE, &CMDBtoExcelDlg::OnBnClickedButtonChange)
-	ON_BN_CLICKED(IDC_CHECK_Seperate, &CMDBtoExcelDlg::OnBnClickedCheckSeperate)
-	ON_BN_CLICKED(IDC_BUTTON_Seperate, &CMDBtoExcelDlg::OnBnClickedButtonSeperate)
 	ON_NOTIFY(HDN_ITEMCLICK, 0, &CMDBtoExcelDlg::OnHdnItemclickListColumn)
 END_MESSAGE_MAP()
 
@@ -129,7 +123,6 @@ BOOL CMDBtoExcelDlg::OnInitDialog()
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	
 	m_ctrlProgSave.SetRange(1, 100);
-	m_ctrlEditRows.SetCueBanner(_T("Input Rows"));
 
 	m_ctrlListColumn.SetExtendedStyle(m_ctrlListColumn.GetExtendedStyle()
 		| LVS_EX_GRIDLINES 
@@ -237,11 +230,8 @@ void CMDBtoExcelDlg::OnBnClickedBtnOpen()
 			GetDlgItem(IDC_BTN_CONNECT)->EnableWindow(TRUE);
 			GetDlgItem(IDC_EDIT_PW)->EnableWindow(TRUE);
 			GetDlgItem(IDC_COMBO_TABLE)->EnableWindow(FALSE);
-			GetDlgItem(IDC_CHECK_Seperate)->EnableWindow(FALSE);
 			GetDlgItem(IDC_LIST_COLUMN)->EnableWindow(FALSE);
 			GetDlgItem(IDC_EDIT_TotalRows)->EnableWindow(FALSE);
-			GetDlgItem(IDC_EDIT_Rows)->EnableWindow(FALSE);
-			GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(FALSE);
 			GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(FALSE);
 			GetDlgItem(IDC_BUTTON_CHANGE)->EnableWindow(FALSE);		
 			if (m_db.IsOpen())
@@ -261,7 +251,7 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 
 	CString strConnection;
 	strConnection.Format(_T("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=%s;PWD=%s")
-		, m_strPath, m_strPW);
+		, (LPCTSTR)m_strPath, (LPCTSTR)m_strPW);
 
 	if (!(m_db.OpenEx(strConnection, 0)))
 	{
@@ -273,11 +263,8 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 	GetDlgItem(IDC_BTN_CONNECT)->EnableWindow(FALSE);
 	GetDlgItem(IDC_EDIT_PW)->EnableWindow(FALSE);
 	GetDlgItem(IDC_COMBO_TABLE)->EnableWindow(TRUE);
-	//GetDlgItem(IDC_CHECK_Seperate)->EnableWindow(TRUE);
 	GetDlgItem(IDC_LIST_COLUMN)->EnableWindow(TRUE);
 	GetDlgItem(IDC_EDIT_TotalRows)->EnableWindow(TRUE);
-	//GetDlgItem(IDC_EDIT_Rows)->EnableWindow(TRUE);
-	//GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_CHANGE)->EnableWindow(TRUE);
 	
@@ -320,7 +307,7 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 	// -----------------------------------------------------------------------------
 	// Count Total Record
 	CDBVariant vtval;
-	strSQLCommand.Format(_T("Select count(*) from %s"), m_strCurrentTable);
+	strSQLCommand.Format(_T("Select count(*) from %s"), (LPCTSTR)m_strCurrentTable);
 	m_tbRecordSet.Open(CRecordset::forwardOnly, strSQLCommand);
 	m_tbRecordSet.GetFieldValue((short)0, vtval);
 	m_nTotalRecord = vtval.m_lVal;
@@ -333,7 +320,7 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 	// -----------------------------------------------------------------------------
 	// Show Field on the CheckListBox
 	m_ctrlComboTable.GetLBText(m_ctrlComboTable.GetCurSel(), m_strCurrentTable);
-	strSQLCommand.Format(_T("Select * From %s"), m_strCurrentTable);
+	strSQLCommand.Format(_T("Select * From %s"), (LPCTSTR)m_strCurrentTable);
 
 	m_tbRecordSet.Open(CRecordset::dynaset, strSQLCommand);
 
@@ -358,11 +345,6 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 // 테이블 변경 시
 void CMDBtoExcelDlg::OnCbnSelchangeComboTable()
 {
-	// 역으로 순환하여 모든 데이터 빠짐없이 삭제 -> CCheckBoxList 였을때
-	//for (short i = m_ctrlCheckList.GetCount() - 1; i >= 0; i--)
-	//{
-	//	m_ctrlCheckList.DeleteString(i);
-	//}
 	//-------------------------------------------
 	m_ctrlListColumn.DeleteAllItems();
 	m_arrCColumn.clear();
@@ -375,7 +357,7 @@ void CMDBtoExcelDlg::OnCbnSelchangeComboTable()
 	// -----------------------------------------------------------------------------
 	// 총 레코드 값 가져오기
 	CDBVariant vtval;
-	strSQLCommand.Format(_T("Select count(*) from %s"), m_strCurrentTable);
+	strSQLCommand.Format(_T("Select count(*) from %s"), (LPCTSTR)m_strCurrentTable);
 	m_tbRecordSet.Open(CRecordset::forwardOnly, strSQLCommand);
 	m_tbRecordSet.GetFieldValue((short)0, vtval);
 	m_nTotalRecord = vtval.m_lVal;
@@ -387,7 +369,7 @@ void CMDBtoExcelDlg::OnCbnSelchangeComboTable()
 
 	// -----------------------------------------------------------------------------
 	// CheckListBox에 필드 표시
-	strSQLCommand.Format(_T("Select * From %s"), m_strCurrentTable);
+	strSQLCommand.Format(_T("Select * From %s"), (LPCTSTR)m_strCurrentTable);
 	m_tbRecordSet.Open(CRecordset::dynaset, strSQLCommand);
 
 	// 해당 테이블의 Field의 개수 가져오기
@@ -459,22 +441,38 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 
 	else if (dlgSaveFile.DoModal() == IDOK)
 	{
+		vector<lxw_worksheet*>arrPtSheet;
+		lxw_workbook* workbook;
+
 		strPathName = dlgSaveFile.GetPathName();
 		nLen = WideCharToMultiByte(CP_UTF8, 0, strPathName, lstrlenW(strPathName), NULL, 0, NULL, NULL);
 		WideCharToMultiByte(CP_UTF8, 0, strPathName, lstrlenW(strPathName), strUtf8, nLen, NULL, NULL);
 
-		m_workbook = workbook_new(strUtf8);
-		m_arrPtSheet.push_back(workbook_add_worksheet(m_workbook, "test1"));
+		workbook = workbook_new(strUtf8);
+		arrPtSheet.push_back(workbook_add_worksheet(workbook, "Sheet1"));
+
+		// -----------------------------------------------------------------------------
+		// 엑셀 셀 스타일 설정
+		lxw_format* format4Column;
+		format4Column = workbook_add_format(workbook);
+		format_set_border(format4Column, LXW_BORDER_DOTTED);
+		format_set_border_color(format4Column, LXW_COLOR_WHITE);
+		format_set_bold(format4Column);
+		format_set_font_color(format4Column, LXW_COLOR_WHITE);
+		format_set_bg_color(format4Column, LXW_COLOR_BLACK);
+		format_set_align(format4Column, LXW_ALIGN_CENTER);
+		format_set_text_wrap(format4Column);
+		// -----------------------------------------------------------------------------
 
 		CString strQuery;
-		strQuery.Format(_T("select %s from %s"), m_strSelectedField, m_strCurrentTable);
+		strQuery.Format(_T("select %s from %s"), (LPCTSTR)m_strSelectedField, (LPCTSTR)m_strCurrentTable);
 
 		m_tbRecordSet.Open(CRecordset::dynaset, strQuery);
 		// -----------------------------------------------------------------------------
 		// 엑셀 첫 번째 라인 Column 이름으로 설정
 		CODBCFieldInfo info;
 		CString strUnicode;
-		int nCount = (int)m_arrCColumn.size();
+		int nCount = (int)m_arrCheckIdx.size();
 		int nxlsxCol = 0;
 
 		vector<SWORD> arrDtype;
@@ -482,24 +480,30 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 
 		for (int nIdx = 0; nIdx < nCount; nIdx++)
 		{
-			if (m_arrCColumn[nIdx].m_bCheck)
-			{
-				strUnicode.Empty();
-				memset(strUtf8, 0, sizeof(strUtf8));
+			strUnicode.Empty();
+			memset(strUtf8, 0, sizeof(strUtf8));
 
-				m_tbRecordSet.GetODBCFieldInfo(m_arrCColumn[nIdx].m_strOriginName, info);
-				arrDtype.push_back(info.m_nSQLType);
-				// -----------------------------------------------------------------------------
-				strUnicode = m_arrCColumn[nIdx].m_strChangeName;
-				nLen = WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
-					, NULL, 0, NULL, NULL);
-				WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
-					, strUtf8, nLen, NULL, NULL);
-				// -----------------------------------------------------------------------------
-				// worksheet_set_column(m_arrPtSheet[0], 0, nxlsxCol, info.m_nPrecision, NULL);
-				worksheet_write_string(m_arrPtSheet[0], 0, nxlsxCol, strUtf8, NULL);
-				nxlsxCol++;
+			m_tbRecordSet.GetODBCFieldInfo(m_arrCColumn[m_arrCheckIdx[nIdx]].m_strOriginName, info);
+			arrDtype.push_back(info.m_nSQLType);
+			// -----------------------------------------------------------------------------
+			strUnicode = m_arrCColumn[m_arrCheckIdx[nIdx]].m_strChangeName;
+			nLen = WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
+				, NULL, 0, NULL, NULL);
+			WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
+				, strUtf8, nLen, NULL, NULL);
+			// -----------------------------------------------------------------------------
+			if (info.m_nSQLType == SQL_NUMERIC || info.m_nSQLType == SQL_INTEGER
+				|| info.m_nSQLType == SQL_SMALLINT)
+			{
+				worksheet_set_column(arrPtSheet[0], nIdx, nIdx, 10, NULL);
 			}
+			else
+			{
+				worksheet_set_column(arrPtSheet[0], nIdx, nIdx, 50, NULL);
+			}
+
+			worksheet_write_string(arrPtSheet[0], 0, nxlsxCol, strUtf8, format4Column);
+			nxlsxCol++;
 		}
 		// -----------------------------------------------------------------------------
 
@@ -518,7 +522,7 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 					|| arrDtype[nCol] == SQL_SMALLINT)
 				{
 					nValue = _ttoi(strUnicode);
-					worksheet_write_number(m_arrPtSheet[0], nRow, nCol, nValue, NULL);
+					worksheet_write_number(arrPtSheet[0], nRow, nCol, nValue, NULL);
 				}
 				else
 				{
@@ -528,7 +532,7 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 					WideCharToMultiByte(CP_UTF8, 0, strUnicode, lstrlenW(strUnicode)
 						, strUtf8, nLen, NULL, NULL);;
 					// ---------------------------------------------------------------------------
-					worksheet_write_string(m_arrPtSheet[0], nRow, nCol, strUtf8, NULL);
+					worksheet_write_string(arrPtSheet[0], nRow, nCol, strUtf8, NULL);
 					strUnicode.Empty();
 					memset(strUtf8, 0, sizeof(strUtf8));
 				}	
@@ -539,7 +543,22 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 		}
 		// -----------------------------------------------------------------------------
 
-		lxw_error error_state = workbook_close(m_workbook);
+		// -----------------------------------------------------------------------------
+		// 엑셀 음영 처리 부분
+		CString strColumnOpt;
+		char cCol = 'A';
+		strColumnOpt.Format(_T("%c:XFD"), cCol + nCount);
+		nLen = WideCharToMultiByte(CP_UTF8, 0, strColumnOpt, lstrlenW(strColumnOpt)
+			, NULL, 0, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, strColumnOpt, lstrlenW(strColumnOpt)
+			, strUtf8, nLen, NULL, NULL);;
+		lxw_row_col_options options = { 1 };
+		worksheet_set_column_opt(arrPtSheet[0], COLS(strUtf8), 8.43, NULL, &options);
+		worksheet_set_default_row(arrPtSheet[0], 15, LXW_TRUE);
+		// -----------------------------------------------------------------------------
+
+
+		lxw_error error_state = workbook_close(workbook);
 		if (!(strcmp(lxw_strerror(error_state), "No error.")))
 		{
 			AfxMessageBox(_T("파일이 생성되었습니다."));
@@ -566,15 +585,12 @@ void CMDBtoExcelDlg::OnBnClickedButtonChange()
 void CMDBtoExcelDlg::GetFieldString()
 {
 	m_strSelectedField.Empty();
-	int nCount = (int)m_arrCColumn.size();
+	int nCount = (int)m_arrCheckIdx.size();
 
 	for (int nfield = 0; nfield < nCount; nfield++)
 	{
-		if (m_arrCColumn[nfield].m_bCheck)
-		{
-			m_strSelectedField += m_arrCColumn[nfield].m_strChangeName;
-			m_strSelectedField += _T(",");
-		}
+		m_strSelectedField += m_arrCColumn[nfield].m_strOriginName;
+		m_strSelectedField += _T(",");
 	}
 	m_strSelectedField.Delete(m_strSelectedField.GetLength() - 1);
 }
@@ -584,34 +600,20 @@ void CMDBtoExcelDlg::GetFieldString()
 // Vector에 있는 CColumnName의 bState 상태 확인
 void CMDBtoExcelDlg::UpdateCheckState()
 {
+	m_arrCheckIdx.clear();
+
 	int nCount = (int)m_arrCColumn.size();
 	for (int idx = 0; idx < nCount; idx++)
 	{
 		if (m_ctrlListColumn.GetCheck(idx))
 		{
 			m_arrCColumn[idx].m_bCheck = TRUE;
+			m_arrCheckIdx.push_back(idx);
+		}
+		else
+		{
+			m_arrCColumn[idx].m_bCheck = FALSE;
 		}
 	}
-
 }
 // -----------------------------------------------------------------------
-
-void CMDBtoExcelDlg::OnBnClickedCheckSeperate()
-{
-	if (m_ctrlCheckSeperate.GetCheck() == BST_CHECKED)
-	{
-		GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(TRUE);
-		m_ctrlEditRows.EnableWindow(TRUE);
-	}
-	else
-	{
-		GetDlgItem(IDC_BUTTON_Seperate)->EnableWindow(FALSE);
-		m_ctrlEditRows.EnableWindow(FALSE);
-	}
-}
-
-
-void CMDBtoExcelDlg::OnBnClickedButtonSeperate()
-{
-	m_dlgSeperate.DoModal();
-}
