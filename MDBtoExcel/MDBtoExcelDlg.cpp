@@ -248,7 +248,7 @@ void CMDBtoExcelDlg::OnBnClickedBtnOpen()
 // MDB 연결
 void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 {
-
+	m_ctrlComboTable.Clear();
 	CString strConnection;
 	strConnection.Format(_T("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=%s;PWD=%s")
 		, (LPCTSTR)m_strPath, (LPCTSTR)m_strPW);
@@ -589,7 +589,7 @@ void CMDBtoExcelDlg::GetFieldString()
 
 	for (int nfield = 0; nfield < nCount; nfield++)
 	{
-		m_strSelectedField += m_arrCColumn[nfield].m_strOriginName;
+		m_strSelectedField += m_arrCColumn[m_arrCheckIdx[nfield]].m_strOriginName;
 		m_strSelectedField += _T(",");
 	}
 	m_strSelectedField.Delete(m_strSelectedField.GetLength() - 1);
