@@ -223,8 +223,9 @@ void CMDBtoExcelDlg::OnBnClickedBtnOpen()
 			AfxMessageBox(_T("이미 개방된 DB 입니다."), MB_OK);
 		}
 
-		else
+		else if (m_strPath != dlgfile.GetPathName())
 		{
+			m_strPath.Empty();
 			m_strPath = dlgfile.GetPathName();
 			m_ctrlEditFileName.SetWindowText(dlgfile.GetFileName());
 			GetDlgItem(IDC_BTN_CONNECT)->EnableWindow(TRUE);
@@ -238,6 +239,7 @@ void CMDBtoExcelDlg::OnBnClickedBtnOpen()
 			{
 				m_db.Close();
 			}
+			m_ctrlComboTable.ResetContent();
 			m_arrCColumn.clear();
 			m_ctrlListColumn.DeleteAllItems();
 		}
@@ -248,7 +250,7 @@ void CMDBtoExcelDlg::OnBnClickedBtnOpen()
 // MDB 연결
 void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 {
-	m_ctrlComboTable.Clear();
+	UpdateData(1);
 	CString strConnection;
 	strConnection.Format(_T("Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=%s;PWD=%s")
 		, (LPCTSTR)m_strPath, (LPCTSTR)m_strPW);
@@ -267,7 +269,7 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 	GetDlgItem(IDC_EDIT_TotalRows)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_CHANGE)->EnableWindow(TRUE);
-	
+
 	// ---------------------------------------------------------------------------------
 	// 기본적인 ODBC API를 이용하여 MDB 파일의 Table List 가져오기
 	HSTMT hStmt;
