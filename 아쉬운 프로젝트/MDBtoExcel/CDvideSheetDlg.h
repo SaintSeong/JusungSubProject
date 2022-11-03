@@ -34,6 +34,7 @@ public:
 	
 	int m_nISavedItem;
 	int m_nISavedSubitem;
+	int m_nSheetCount;
 	vector<CSheet> m_arrSheet;
 	CEdit m_ctrlEditSheet;
 };

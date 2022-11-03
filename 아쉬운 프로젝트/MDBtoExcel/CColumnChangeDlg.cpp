@@ -82,24 +82,12 @@ BOOL CColumnChangeDlg::OnInitDialog()
 
 	CMDBtoExcelDlg* dlgParent = (CMDBtoExcelDlg*)GetParent();
 
-	int nCount = (int)dlgParent->m_arrCColumn.size();
-	int nListIdx = 1;
-	for (int nVectorIdx = 0; nVectorIdx < nCount; nVectorIdx++)
+	for (int nIdx = 0; nIdx < dlgParent->m_arrFindIdx.size(); nIdx++)
 	{
-		if (dlgParent->m_arrCColumn[dlgParent->m_nStandardIdx].m_strOriginName
-			== dlgParent->m_arrCColumn[nVectorIdx].m_strOriginName)
-		{
-			m_ctrlCoulumnList.InsertItem(0, dlgParent->m_arrCColumn[nVectorIdx].m_strOriginName);
-			m_ctrlCoulumnList.SetItemText(0, 1, dlgParent->m_arrCColumn[nVectorIdx].m_strChangeName);
-			continue;
-		}
-
-		if (dlgParent->m_arrCColumn[nListIdx].m_bCheck)
-		{
-			m_ctrlCoulumnList.InsertItem(nListIdx, dlgParent->m_arrCColumn[nVectorIdx].m_strOriginName);
-			m_ctrlCoulumnList.SetItemText(nListIdx, 1, dlgParent->m_arrCColumn[nVectorIdx].m_strChangeName);
-			nListIdx++;
-		}
+		m_ctrlCoulumnList.InsertItem(nIdx
+			, dlgParent->m_arrCColumn[dlgParent->m_arrFindIdx[nIdx]].m_strOriginName);
+		m_ctrlCoulumnList.SetItemText(nIdx, 1
+			, dlgParent->m_arrCColumn[dlgParent->m_arrFindIdx[nIdx]].m_strChangeName);
 	}
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -174,17 +162,10 @@ BOOL CColumnChangeDlg::PreTranslateMessage(MSG* pMsg)
 void CColumnChangeDlg::OnBnClickedOk()
 {
 	CMDBtoExcelDlg* dlgParent = (CMDBtoExcelDlg*)GetParent();
-	for (int nListIdx = 0; nListIdx < m_ctrlCoulumnList.GetItemCount(); nListIdx++)
+	for (int nIdx = 0; nIdx < dlgParent->m_arrFindIdx.size(); nIdx++)
 	{
-		for (int nColumnIdx = 0; nColumnIdx < dlgParent->m_arrCColumn.size(); nColumnIdx++)
-		{
-			if (dlgParent->m_arrCColumn[nColumnIdx].m_strOriginName 
-				== m_ctrlCoulumnList.GetItemText(nListIdx, 0))
-			{
-				dlgParent->m_arrCColumn[nColumnIdx].m_strChangeName 
-					= m_ctrlCoulumnList.GetItemText(nListIdx, 1);
-			}
-		}
+		dlgParent->m_arrCColumn[dlgParent->m_arrFindIdx[nIdx]].m_strChangeName 
+			= m_ctrlCoulumnList.GetItemText(nIdx, 1);
 	}
 	CDialogEx::OnOK();
 }

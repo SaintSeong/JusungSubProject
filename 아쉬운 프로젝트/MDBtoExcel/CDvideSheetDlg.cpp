@@ -17,6 +17,7 @@ CDvideSheetDlg::CDvideSheetDlg(CWnd* pParent /*=nullptr*/)
 	, m_strStandardField(_T(""))
 	, m_nISavedItem(0)
 	, m_nISavedSubitem(0)
+	, m_nSheetCount(0)
 {
 	m_arrSheet.resize(1);
 	m_arrSheet[0].m_strSheetOrigin = _T("sheet1");
@@ -65,7 +66,8 @@ BOOL CDvideSheetDlg::OnInitDialog()
 
 	/*CMDBtoExcelDlg* dlgParent = (CMDBtoExcelDlg*)GetParent();
 	dlgParent->m_ctrlComboStandard.GetLBText(dlgParent->m_nStandardIdx, m_strStandardField);*/
-	UpdateData(0);
+	
+	m_ctrlEditSheet.SetWindowText(_T("0"));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -76,10 +78,9 @@ void CDvideSheetDlg::OnBnClickedButtonDivide()
 {
 	m_arrSheet.clear();
 	CString strSheetNumber;
-	int nSheetNumber;
 	m_ctrlEditSheet.GetWindowText(strSheetNumber);
-	nSheetNumber = _ttoi(strSheetNumber);
-	m_arrSheet.resize(nSheetNumber);
+	m_nSheetCount = _ttoi(strSheetNumber);
+	m_arrSheet.resize(m_nSheetCount);
 	
 	int nMin = 1;
 	int nMax = 100000;
@@ -87,7 +88,7 @@ void CDvideSheetDlg::OnBnClickedButtonDivide()
 
 	CString strSheetName;
 	CString strNumber;
-	for (int nRow = 0; nRow < nSheetNumber; nRow++)
+	for (int nRow = 0; nRow < m_nSheetCount; nRow++)
 	{
 		strSheetName.Format(_T("Sheet%d"), nRow + 1);
 		m_arrSheet[nRow].m_strSheetOrigin = strSheetName;
