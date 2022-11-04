@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDBtoExcel", "MDBtoExcel\MDBtoExcel.csproj", "{BB1863E3-351B-4D32-A0CB-D80D00D476BA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB1863E3-351B-4D32-A0CB-D80D00D476BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB1863E3-351B-4D32-A0CB-D80D00D476BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB1863E3-351B-4D32-A0CB-D80D00D476BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB1863E3-351B-4D32-A0CB-D80D00D476BA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D280C293-4666-4E61-899A-EA54BF6F9707}
+	EndGlobalSection
+EndGlobal

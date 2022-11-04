@@ -1,0 +1,5 @@
+https://link2me.tistory.com/864 : C# 이벤트 핸들러와 델리게이트
+https://velog.io/@codeapril/C-리소스Resource추가-하기 : C# 리소스 추가하기
+https://coding-factory.tistory.com/216 : 스키마란 무엇인가
+https://stackoverflow.com/questions/33969365/sending-a-value-from-opened-form-2-to-form-1 : form1을 form2로 호출하기
+https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=imjcpark&logNo=220507445931 : listView edit sub items
