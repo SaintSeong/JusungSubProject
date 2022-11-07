@@ -49,7 +49,6 @@
 #define IDC_EDIT_SHEET_VALUE            1040
 #define IDC_BUTTON_DIVIDE               1041
 #define IDC_EDIT_MODIFY_SHEETDLG        1043
-#define IDC_BUTTON1                     1044
 #define IDC_BUTTON_LOAD                 1044
 #define IDC_Combo_Color                 2000
 

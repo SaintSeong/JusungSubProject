@@ -88,6 +88,7 @@ BEGIN_MESSAGE_MAP(CMDBtoExcelDlg, CDialogEx)
 	ON_NOTIFY(HDN_ITEMCLICK, 0, &CMDBtoExcelDlg::OnHdnItemclickListColumn)
 	ON_CBN_SELCHANGE(IDC_COMBO_STANDARD, &CMDBtoExcelDlg::OnCbnSelchangeComboStandard)
 	ON_BN_CLICKED(IDC_BUTTON_DivideSheet, &CMDBtoExcelDlg::OnBnClickedButtonDividesheet)
+	ON_BN_CLICKED(IDC_BUTTON_LOAD, &CMDBtoExcelDlg::OnBnClickedButtonLoad)
 END_MESSAGE_MAP()
 
 
@@ -238,7 +239,6 @@ void CMDBtoExcelDlg::OnBnClickedBtnOpen()
 			GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(FALSE);
 			GetDlgItem(IDC_BUTTON_CHANGE)->EnableWindow(FALSE);	
 			GetDlgItem(IDC_BUTTON_DivideSheet)->EnableWindow(FALSE);
-			GetDlgItem(IDC_BUTTON_LOAD)->EnableWindow(FALSE);
 			if (m_db.IsOpen())
 			{
 				m_db.Close();
@@ -276,8 +276,6 @@ void CMDBtoExcelDlg::OnBnClickedBtnConnect()
 	GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_CHANGE)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_DivideSheet)->EnableWindow(TRUE);
-	GetDlgItem(IDC_BUTTON_LOAD)->EnableWindow(TRUE);
-	
 	
 	// ---------------------------------------------------------------------------------
 	// 기본적인 ODBC API를 이용하여 MDB 파일의 Table List 가져오기
@@ -529,13 +527,13 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 		format_set_align(format4String, LXW_ALIGN_VERTICAL_CENTER);
 		format_set_text_wrap(format4String);
 		// -----------------------------------------------------------------------------
-		// -----------------------------------------------------------------------------
 		// Sheet에 들어갈 수 있는 유효 데이터 존재 여부 확인
 		CString strQuery;
 		CString strCount;
 		CString strSheet;
 		CDBVariant vtval;
 		CString strTotalRecord;
+		vector<int> arrDataSheet; // 데이터가 존재하는 범위 부분만 추출
 		int nSheetCount = m_dlgSheet.m_nSheetCount;
 
 		for (int nIdx = 0; nIdx < nSheetCount; nIdx++)
@@ -557,34 +555,64 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 					, strUtf8, nLen, NULL, NULL);
 
 				arrPtSheet.push_back(workbook_add_worksheet(workbook, strUtf8));
+				arrDataSheet.push_back(nIdx);
 			}
 			m_tbRecordSet.Close();
 		}
 		
-		// -----------------------------------------------------------------------------
-		// 엑셀 첫 번째 라인 Column 이름으로 설정
 		CString strField;
+		CString strFieldValue;
 		CODBCFieldInfo info_field = { 0, };
 		vector<int>arrFieldType;
-		int nOnce = 0;
+
+		//추가 탭 컬러 지정
+		int tabColor[] = {
+			//LXW_COLOR_WHITE, //Selected Color
+			LXW_COLOR_YELLOW,
+			LXW_COLOR_RED,
+			LXW_COLOR_BLUE,
+			LXW_COLOR_GREEN,
+			//-----------------------------
+			LXW_COLOR_BLACK,
+			LXW_COLOR_BROWN,
+			LXW_COLOR_CYAN,
+			LXW_COLOR_GRAY,
+			LXW_COLOR_LIME,
+
+			LXW_COLOR_MAGENTA,
+			LXW_COLOR_NAVY,
+			LXW_COLOR_ORANGE,
+			LXW_COLOR_PINK,
+			LXW_COLOR_PURPLE,
+
+			LXW_COLOR_SILVER,
+		};
+
+		int index = 0;
 		int nFieldCount = (int)m_arrFindIdx.size();
+		// -----------------------------------------------------------------------------
+		// 엑셀 sheet에 데이터가 존재하는 것만 설정
 		for (int nSheetIdx = 0; nSheetIdx < arrPtSheet.size(); nSheetIdx++)
 		{
+			worksheet_set_tab_color(arrPtSheet[nSheetIdx], tabColor[index++]);
+			if (index > 14) index = 0;
+
 			strQuery.Format(_T("select %s from %s where %s between %d and %d;")
 				, (LPCTSTR)m_strSelectedField, (LPCTSTR)m_strCurrentTable
 				, (LPCTSTR)m_arrCColumn[m_nStandardIdx].m_strOriginName
-				, m_dlgSheet.m_arrSheet[nSheetIdx].m_nMin, m_dlgSheet.m_arrSheet[nSheetIdx].m_nMax);
+				, m_dlgSheet.m_arrSheet[arrDataSheet[nSheetIdx]].m_nMin
+				, m_dlgSheet.m_arrSheet[arrDataSheet[nSheetIdx]].m_nMax);
 
+			m_tbRecordSet.Open(CRecordset::dynaset, strQuery);
+			// -----------------------------------------------------------------------------
+			// 엑셀 첫 번째 라인 Column 이름으로 설정
 			for (int nIdx = 0; nIdx < nFieldCount; nIdx++)
 			{
 				strField.Empty();
 				memset(strUtf8, 0, sizeof(strUtf8));
 				
-				if (nOnce)
-				{
-					m_tbRecordSet.GetODBCFieldInfo(m_arrCColumn[m_arrFindIdx[nIdx]].m_strOriginName, info_field);
-					arrFieldType.push_back(info_field.m_nSQLType);
-				}
+				m_tbRecordSet.GetODBCFieldInfo(m_arrCColumn[m_arrFindIdx[nIdx]].m_strOriginName, info_field);
+				arrFieldType.push_back(info_field.m_nSQLType);
 
 				strField = m_arrCColumn[m_arrFindIdx[nIdx]].m_strChangeName;
 				nLen = WideCharToMultiByte(CP_UTF8, 0, strField, lstrlenW(strField)
@@ -603,56 +631,56 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 				}
 				worksheet_write_string(arrPtSheet[nSheetIdx], 0, nIdx, strUtf8, format4Column);
 			}
-			nOnce++;
-		}
-		// -----------------------------------------------------------------------------
 
-		// -----------------------------------------------------------------------------
-		//  엑셀에 데이터 작성
-		//CString strFieldValue;
-		//int nRow = 1;
-		//int nValue = 0;
-		//while (!(m_tbRecordSet.IsEOF()))
-		//{
-		//	for (int nCol = 0; nCol < nFieldCount; nCol++)
-		//	{
-		//		strFieldValue.Empty();
-		//		memset(strUtf8, 0, sizeof(strUtf8));
-		//		m_tbRecordSet.GetFieldValue(short(nCol), strFieldValue);
-		//		nLen = WideCharToMultiByte(CP_UTF8, 0, strFieldValue, lstrlenW(strFieldValue)
-		//			, NULL, 0, NULL, NULL);
-		//		WideCharToMultiByte(CP_UTF8, 0, strFieldValue, lstrlenW(strFieldValue)
-		//			, strUtf8, nLen, NULL, NULL);
-		//		
-		//		if (arrFieldType[nCol] == SQL_NUMERIC || arrFieldType[nCol] == SQL_INTEGER
-		//			|| arrFieldType[nCol] == SQL_SMALLINT)
-		//		{
-		//			nValue = _ttoi(strFieldValue);
-		//			worksheet_write_number(arrPtSheet[0], nRow, nCol, nValue, format4Number);
-		//		}
-		//		else
-		//		{
-		//			worksheet_write_string(arrPtSheet[0], nRow, nCol, strUtf8, format4String);
-		//		}
-		//	}
-		//	nRow++;
-		//	m_ctrlProgSave.SetPos(nRow);
-		//	m_tbRecordSet.MoveNext();
-		//}
-		// -----------------------------------------------------------------------------
-		
-		// -----------------------------------------------------------------------------
-		// 엑셀 음영 처리 부분
-		//CString strColumnOpt;
-		//char cCol = 'A';
-		//strColumnOpt.Format(_T("%c:XFD"), cCol + nFieldCount);
-		//nLen = WideCharToMultiByte(CP_UTF8, 0, strColumnOpt, lstrlenW(strColumnOpt)
-		//	, NULL, 0, NULL, NULL);
-		//WideCharToMultiByte(CP_UTF8, 0, strColumnOpt, lstrlenW(strColumnOpt)
-		//	, strUtf8, nLen, NULL, NULL);
-		//lxw_row_col_options options = { 1 };
-		//worksheet_set_column_opt(arrPtSheet[0], COLS(strUtf8), 8.43, NULL, &options);
-		//worksheet_set_default_row(arrPtSheet[0], 15, LXW_TRUE);
+			// -----------------------------------------------------------------------------
+			// 엑셀에 데이터 작성
+			int nRow = 1;
+			int nValue = 0;
+			while (!(m_tbRecordSet.IsEOF()))
+			{
+				for (int nCol = 0; nCol < nFieldCount; nCol++)
+				{
+					strFieldValue.Empty();
+					memset(strUtf8, 0, sizeof(strUtf8));
+					m_tbRecordSet.GetFieldValue(short(nCol), strFieldValue);
+					nLen = WideCharToMultiByte(CP_UTF8, 0, strFieldValue, lstrlenW(strFieldValue)
+						, NULL, 0, NULL, NULL);
+					WideCharToMultiByte(CP_UTF8, 0, strFieldValue, lstrlenW(strFieldValue)
+						, strUtf8, nLen, NULL, NULL);
+
+					if (arrFieldType[nCol] == SQL_NUMERIC || arrFieldType[nCol] == SQL_INTEGER
+						|| arrFieldType[nCol] == SQL_SMALLINT)
+					{
+						nValue = _ttoi(strFieldValue);
+						worksheet_write_number(arrPtSheet[nSheetIdx], nRow, nCol, nValue, format4Number);
+					}
+					else
+					{
+						worksheet_write_string(arrPtSheet[nSheetIdx], nRow, nCol, strUtf8, format4String);
+					}
+				}
+				nRow++;
+				//m_ctrlProgSave.SetPos(nRow);
+				m_tbRecordSet.MoveNext();
+			}
+			// -----------------------------------------------------------------------------
+
+			// -----------------------------------------------------------------------------
+			// 엑셀 음영 처리 부분
+			CString strColumnOpt;
+			char cCol = 'A';
+			strColumnOpt.Format(_T("%c:XFD"), cCol + nFieldCount);
+			nLen = WideCharToMultiByte(CP_UTF8, 0, strColumnOpt, lstrlenW(strColumnOpt)
+				, NULL, 0, NULL, NULL);
+			WideCharToMultiByte(CP_UTF8, 0, strColumnOpt, lstrlenW(strColumnOpt)
+				, strUtf8, nLen, NULL, NULL);
+			lxw_row_col_options options = { 1 };
+			worksheet_set_column_opt(arrPtSheet[nSheetIdx], COLS(strUtf8), 8.43, NULL, &options);
+			worksheet_set_default_row(arrPtSheet[nSheetIdx], 15, LXW_TRUE);
+			// -----------------------------------------------------------------------------
+
+			m_tbRecordSet.Close();
+		}
 		// -----------------------------------------------------------------------------
 
 		lxw_error error_state = workbook_close(workbook);
@@ -665,9 +693,7 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 			MessageBoxA(NULL, lxw_strerror(error_state), "Error", MB_OK);
 		}
 	}
-
 	m_ctrlProgSave.SetPos(0);
-	m_tbRecordSet.Close();
 }
 // -----------------------------------------------------------------------
 // CheckListBox에서 체크된 필드를 합치는 곳
@@ -721,4 +747,17 @@ void CMDBtoExcelDlg::UpdateCheckState()
 void CMDBtoExcelDlg::OnBnClickedButtonDividesheet()
 {
 	m_dlgSheet.DoModal();
+}
+
+
+void CMDBtoExcelDlg::OnBnClickedButtonLoad()
+{
+	CFileDialog fileDlg(1, _T("*.csv")
+		, 0
+		, OFN_OVERWRITEPROMPT | OFN_LONGNAMES | OFN_FILEMUSTEXIST
+		, _T("Result Files (*.xlsx)|*.xlsx||"));
+	if (fileDlg.DoModal() == IDOK)
+	{
+		ShellExecute(NULL, _T("open"), fileDlg.GetPathName(), NULL, NULL, SW_SHOW);
+	}
 }

@@ -17,7 +17,7 @@ CDvideSheetDlg::CDvideSheetDlg(CWnd* pParent /*=nullptr*/)
 	, m_strStandardField(_T(""))
 	, m_nISavedItem(0)
 	, m_nISavedSubitem(0)
-	, m_nSheetCount(0)
+	, m_nSheetCount(1)
 {
 	m_arrSheet.resize(1);
 	m_arrSheet[0].m_strSheetOrigin = _T("sheet1");
@@ -64,8 +64,8 @@ BOOL CDvideSheetDlg::OnInitDialog()
 	m_ctrlListSheet.InsertColumn(2, _T("Min"), 0, rect.Width() / 6);
 	m_ctrlListSheet.InsertColumn(3, _T("Max"), 0, rect.Width() / 6);
 
-	/*CMDBtoExcelDlg* dlgParent = (CMDBtoExcelDlg*)GetParent();
-	dlgParent->m_ctrlComboStandard.GetLBText(dlgParent->m_nStandardIdx, m_strStandardField);*/
+	CMDBtoExcelDlg* dlgParent = (CMDBtoExcelDlg*)GetParent();
+	dlgParent->m_ctrlComboStandard.GetLBText(dlgParent->m_nStandardIdx, m_strStandardField);
 	
 	m_ctrlEditSheet.SetWindowText(_T("0"));
 
@@ -94,7 +94,7 @@ void CDvideSheetDlg::OnBnClickedButtonDivide()
 		m_arrSheet[nRow].m_strSheetOrigin = strSheetName;
 		m_arrSheet[nRow].m_strSheetChange = strSheetName;
 		m_arrSheet[nRow].m_nMin = nMin;
-		m_arrSheet[nRow].m_nMax = nMax;
+		m_arrSheet[nRow].m_nMax = nMax - 1;
 
 		m_ctrlListSheet.InsertItem(nRow, m_arrSheet[nRow].m_strSheetOrigin);
 		m_ctrlListSheet.SetItemText(nRow, 1, m_arrSheet[nRow].m_strSheetChange);
@@ -103,14 +103,15 @@ void CDvideSheetDlg::OnBnClickedButtonDivide()
 		strNumber.Format(_T("%d"), m_arrSheet[nRow].m_nMax);
 		m_ctrlListSheet.SetItemText(nRow, 3, strNumber);
 
-		if (nRow == 3)
+		nMin = nMax;
+		nMax = nMax + nRange;
+
+		if (nRow == 2)
 		{
 			nRange = 1000000;
 			nMin = nRange;
 			nMax = nRange * 2;
 		}
-		nMin = nMax;
-		nMax = nMax + nRange;
 	}
 
 	m_ctrlListSheet.EnableWindow(TRUE);

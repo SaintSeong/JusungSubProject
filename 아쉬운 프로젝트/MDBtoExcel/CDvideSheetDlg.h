@@ -31,10 +31,12 @@ public:
 	
 	CListCtrl m_ctrlListSheet;
 	CString m_strStandardField;
-	
+	CEdit m_ctrlEditSheet;
+	vector<CSheet> m_arrSheet;
+
 	int m_nISavedItem;
 	int m_nISavedSubitem;
 	int m_nSheetCount;
-	vector<CSheet> m_arrSheet;
-	CEdit m_ctrlEditSheet;
+	
+	
 };

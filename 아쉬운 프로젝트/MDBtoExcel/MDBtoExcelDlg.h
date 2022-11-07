@@ -78,4 +78,5 @@ public:
 	CProgressCtrl m_ctrlProgSave;
 	CListCtrl m_ctrlListColumn;
 	
+	afx_msg void OnBnClickedButtonLoad();
 };
