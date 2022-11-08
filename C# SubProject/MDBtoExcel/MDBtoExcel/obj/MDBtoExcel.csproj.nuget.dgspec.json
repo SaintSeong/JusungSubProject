@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\BIT\\Desktop\\visual studio\\MDBtoExcel\\MDBtoExcel\\MDBtoExcel.csproj": {}
+    "C:\\Users\\BIT\\Desktop\\SubProject\\C# SubProject\\MDBtoExcel\\MDBtoExcel\\MDBtoExcel.csproj": {}
   },
   "projects": {
-    "C:\\Users\\BIT\\Desktop\\visual studio\\MDBtoExcel\\MDBtoExcel\\MDBtoExcel.csproj": {
+    "C:\\Users\\BIT\\Desktop\\SubProject\\C# SubProject\\MDBtoExcel\\MDBtoExcel\\MDBtoExcel.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\BIT\\Desktop\\visual studio\\MDBtoExcel\\MDBtoExcel\\MDBtoExcel.csproj",
+        "projectUniqueName": "C:\\Users\\BIT\\Desktop\\SubProject\\C# SubProject\\MDBtoExcel\\MDBtoExcel\\MDBtoExcel.csproj",
         "projectName": "MDBtoExcel",
-        "projectPath": "C:\\Users\\BIT\\Desktop\\visual studio\\MDBtoExcel\\MDBtoExcel\\MDBtoExcel.csproj",
+        "projectPath": "C:\\Users\\BIT\\Desktop\\SubProject\\C# SubProject\\MDBtoExcel\\MDBtoExcel\\MDBtoExcel.csproj",
         "packagesPath": "C:\\Users\\BIT\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\BIT\\Desktop\\visual studio\\MDBtoExcel\\MDBtoExcel\\obj\\",
+        "outputPath": "C:\\Users\\BIT\\Desktop\\SubProject\\C# SubProject\\MDBtoExcel\\MDBtoExcel\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\BIT\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -40,6 +40,10 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "dependencies": {
+            "SpreadsheetLight": {
+              "target": "Package",
+              "version": "[3.5.0, )"
+            },
             "System.Data.Odbc": {
               "target": "Package",
               "version": "[6.0.1, )"

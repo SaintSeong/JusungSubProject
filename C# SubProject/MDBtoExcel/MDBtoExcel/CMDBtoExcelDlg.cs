@@ -3,27 +3,17 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Data.SqlClient;
 using System.Data.Common;
+using SpreadsheetLight;
+using System.Text;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.Reflection.PortableExecutable;
 
 namespace MDBtoExcel
 {
     public partial class CMDBtoExcelDlg : Form
     {
-        private void UpdateCheckState()
-        {
-            int nIdx = 0;
-            m_arrFindIdx.Clear();
-            foreach (ListViewItem item in listView_Columns.Items)
-            {
-                if (item.Checked)
-                {
-                    m_arrColumns[nIdx].CheckState = true;
-                    m_arrFindIdx.Add(nIdx);
-                }
-                nIdx++;
-            }
-        }
         public CMDBtoExcelDlg()
         {
             InitializeComponent();
@@ -93,7 +83,7 @@ namespace MDBtoExcel
             {
                 MessageBox.Show("연결에 실패하였습니다.");
             }
-
+            
             DataTable dataTable = new DataTable();
             dataTable = m_odbcConnection.GetSchema("Tables");
             foreach (DataRow row in dataTable.Rows)
@@ -116,20 +106,28 @@ namespace MDBtoExcel
 
                 m_odbcCommand.CommandText = "select * from " + comboBox_TableList.Text + ";";
                 m_odbcDataReader = m_odbcCommand.ExecuteReader();
-                int nCount = m_odbcDataReader.FieldCount;
+
+                DataTable schemaTable = m_odbcDataReader.GetSchemaTable();
                 listView_Columns.BeginUpdate();
                 string strName;
-                for (int nColumn = 0; nColumn < nCount; nColumn++)
+                int nDataType;
+                int nRow = 0;
+                foreach (DataRow row in schemaTable.Rows)
                 {
-                    strName = m_odbcDataReader.GetName(nColumn);
+                    strName = Convert.ToString(row["ColumnName"]);
+                    nDataType = Convert.ToInt32(row["ProviderType"]);
                     listView_Columns.Items.Add(strName);
+
                     m_arrColumns.Add(new CColumn());
-                    m_arrColumns[nColumn].OriginName = strName;
-                    m_arrColumns[nColumn].ChangeName = strName;
-                    m_arrColumns[nColumn].CheckState = false;
+                    m_arrColumns[nRow].OriginName = strName;
+                    m_arrColumns[nRow].ChangeName = strName;
+                    m_arrColumns[nRow].Type = nDataType;
+                    m_arrColumns[nRow].CheckState = false;
+
+                    nRow++;
                 }
-                m_odbcDataReader.Close();
                 listView_Columns.EndUpdate();
+                m_odbcDataReader.Close();
             }
             catch (Exception ex)
             {
@@ -155,20 +153,28 @@ namespace MDBtoExcel
 
                 m_odbcCommand.CommandText = "select * from " + comboBox_TableList.Text + ";";
                 m_odbcDataReader = m_odbcCommand.ExecuteReader();
-                int nCount = m_odbcDataReader.FieldCount;
-                string strName;
+                
+                DataTable schemaTable = m_odbcDataReader.GetSchemaTable();
                 listView_Columns.BeginUpdate();
-                for (int nColumn = 0; nColumn < nCount; nColumn++)
+                string strName;
+                int nDataType;
+                int nRow = 0;
+                foreach (DataRow row in schemaTable.Rows)
                 {
-                    strName = m_odbcDataReader.GetName(nColumn);
+                    strName = Convert.ToString(row["ColumnName"]);
+                    nDataType = Convert.ToInt32(row["ProviderType"]);
                     listView_Columns.Items.Add(strName);
+
                     m_arrColumns.Add(new CColumn());
-                    m_arrColumns[nColumn].OriginName = strName;
-                    m_arrColumns[nColumn].ChangeName = strName;
-                    m_arrColumns[nColumn].CheckState = false;
+                    m_arrColumns[nRow].OriginName = strName;
+                    m_arrColumns[nRow].ChangeName = strName;
+                    m_arrColumns[nRow].Type = nDataType;
+                    m_arrColumns[nRow].CheckState = false;
+
+                    nRow++;
                 }
-                m_odbcDataReader.Close();
                 listView_Columns.EndUpdate();
+                m_odbcDataReader.Close();
             }
             catch (Exception ex)
             {
@@ -202,6 +208,88 @@ namespace MDBtoExcel
             if (dlgChange.ShowDialog() == DialogResult.OK)
             {
 
+            }
+        }
+
+        private void button_convert_Excel_Click(object sender, EventArgs e)
+        {
+            UpdateCheckState();
+            StringConnect();
+            if(m_strSelectedCol != null)
+            {
+                SaveFileDialog dlgSave = new SaveFileDialog();
+                dlgSave.Filter = "xlsx files (*.xlsx)|*.xlsx";
+                if (dlgSave.ShowDialog() == DialogResult.OK)
+                {
+                    SLDocument excel = new SLDocument();
+                    m_odbcCommand.CommandText = "select " + m_strSelectedCol + " from "
+                        + comboBox_TableList.Text + ";";
+                    m_odbcDataReader = m_odbcCommand.ExecuteReader();
+
+                    // 엑셀 헤더 입력
+                    int nColCount = m_odbcDataReader.FieldCount;
+                    for (int nIdx = 0; nIdx < nColCount; nIdx++)
+                    {
+                        excel.SetCellValue(1, nIdx + 1, m_odbcDataReader.GetName(nIdx));
+                    }
+
+                    // 엑셀 데이터 입력
+                    int nRow = 2;
+                    while (m_odbcDataReader.Read())
+                    {
+                        for (int nIdx = 0; nIdx < nColCount; nIdx++)
+                        {
+                            if (m_arrColumns[m_arrFindIdx[nIdx]].Type == 10)
+                            {
+                                excel.SetCellValue(nRow, nIdx + 1, m_odbcDataReader.GetInt32(nIdx));
+                            }
+
+                            else if(m_arrColumns[m_arrFindIdx[nIdx]].Type == 13)
+                            {
+                                excel.SetCellValue(nRow, nIdx + 1, m_odbcDataReader.GetString(nIdx));
+                            }
+
+                            else
+                            {
+                                excel.SetCellValue(nRow, nIdx + 1, m_odbcDataReader.GetString(nIdx));
+                            }
+                        }
+                        nRow++;
+                    }
+                    excel.SaveAs(dlgSave.FileName);
+                    m_odbcDataReader.Close();
+                }
+            }     
+        }
+        private void UpdateCheckState()
+        {
+            int nIdx = 0;
+            m_arrFindIdx.Clear();
+            foreach (ListViewItem item in listView_Columns.Items)
+            {
+                if (item.Checked)
+                {
+                    m_arrColumns[nIdx].CheckState = true;
+                    m_arrFindIdx.Add(nIdx);
+                }
+                nIdx++;
+            }
+        }
+
+        private void StringConnect()
+        {
+            m_strSelectedCol = null;
+            for(int nIdx = 0; nIdx < m_arrFindIdx.Count(); nIdx++)
+            {
+                m_strSelectedCol += m_arrColumns[m_arrFindIdx[nIdx]].OriginName;
+                m_strSelectedCol += ",";
+            }
+
+            if(m_strSelectedCol != null)
+            {
+                StringBuilder strReplace = new StringBuilder(m_strSelectedCol);
+                strReplace[m_strSelectedCol.Length - 1] = ' ';
+                m_strSelectedCol = strReplace.ToString();
             }
         }
     }

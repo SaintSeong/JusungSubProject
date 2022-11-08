@@ -16,12 +16,21 @@ public class CColumn
         set { m_strChangeName = value; }
     }
 
+    private int m_nType;
+    public int Type
+    {
+        get { return m_nType; }
+        set { m_nType = value; }
+    }
+
     private bool m_bCheckState;
     public bool CheckState
     {
         get { return m_bCheckState; }
         set { m_bCheckState = value; }
     }
+
+    
 }
 
 
@@ -69,6 +78,7 @@ namespace MDBtoExcel
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.pictureBox_LOGO = new System.Windows.Forms.PictureBox();
             this.button_ChangeColumn = new System.Windows.Forms.Button();
+            this.button_convert_Excel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_LOGO)).BeginInit();
             this.SuspendLayout();
             // 
@@ -210,11 +220,22 @@ namespace MDBtoExcel
             this.button_ChangeColumn.UseVisualStyleBackColor = true;
             this.button_ChangeColumn.Click += new System.EventHandler(this.button_ChangeColumn_Click);
             // 
+            // button_convert_Excel
+            // 
+            this.button_convert_Excel.Location = new System.Drawing.Point(175, 300);
+            this.button_convert_Excel.Name = "button_convert_Excel";
+            this.button_convert_Excel.Size = new System.Drawing.Size(117, 32);
+            this.button_convert_Excel.TabIndex = 14;
+            this.button_convert_Excel.Text = "Convert";
+            this.button_convert_Excel.UseVisualStyleBackColor = true;
+            this.button_convert_Excel.Click += new System.EventHandler(this.button_convert_Excel_Click);
+            // 
             // CMDBtoExcelDlg
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(306, 450);
+            this.Controls.Add(this.button_convert_Excel);
             this.Controls.Add(this.button_ChangeColumn);
             this.Controls.Add(this.pictureBox_LOGO);
             this.Controls.Add(this.progressBar1);
@@ -238,12 +259,15 @@ namespace MDBtoExcel
         }
 
         #endregion
+
         private string m_strPathName;
+        private string m_strSelectedCol;
 
         private OdbcConnection m_odbcConnection;
         private OdbcCommand m_odbcCommand;
         private OdbcDataReader m_odbcDataReader;
         
+
         private Label label1;
         private Label label2;
         private Label label3;
@@ -262,6 +286,6 @@ namespace MDBtoExcel
         public ListView listView_Columns;
         public List<CColumn> m_arrColumns;
         public List<int> m_arrFindIdx;
-       
+        private Button button_convert_Excel;
     }
 }
