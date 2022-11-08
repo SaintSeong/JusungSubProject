@@ -39,4 +39,5 @@ public:
 	int m_nSheetCount;
 	
 	
+	afx_msg void OnBnClickedOk();
 };

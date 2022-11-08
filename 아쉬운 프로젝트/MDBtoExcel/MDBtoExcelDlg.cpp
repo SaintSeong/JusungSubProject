@@ -678,7 +678,6 @@ void CMDBtoExcelDlg::OnBnClickedButtonSave()
 			worksheet_set_column_opt(arrPtSheet[nSheetIdx], COLS(strUtf8), 8.43, NULL, &options);
 			worksheet_set_default_row(arrPtSheet[nSheetIdx], 15, LXW_TRUE);
 			// -----------------------------------------------------------------------------
-
 			m_tbRecordSet.Close();
 		}
 		// -----------------------------------------------------------------------------

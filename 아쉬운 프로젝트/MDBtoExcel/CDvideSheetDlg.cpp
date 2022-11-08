@@ -42,6 +42,7 @@ void CDvideSheetDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CDvideSheetDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DIVIDE, &CDvideSheetDlg::OnBnClickedButtonDivide)
 	ON_NOTIFY(NM_CLICK, IDC_LIST_SHEET, &CDvideSheetDlg::OnNMClickListSheet)
+	ON_BN_CLICKED(IDOK, &CDvideSheetDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -66,9 +67,8 @@ BOOL CDvideSheetDlg::OnInitDialog()
 
 	CMDBtoExcelDlg* dlgParent = (CMDBtoExcelDlg*)GetParent();
 	dlgParent->m_ctrlComboStandard.GetLBText(dlgParent->m_nStandardIdx, m_strStandardField);
-	
 	m_ctrlEditSheet.SetWindowText(_T("0"));
-
+	UpdateData(0);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -167,4 +167,15 @@ BOOL CDvideSheetDlg::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+void CDvideSheetDlg::OnBnClickedOk()
+{
+	for (int nRow = 0; nRow < m_nSheetCount; nRow++)
+	{
+		m_arrSheet[nRow].m_strSheetChange = m_ctrlListSheet.GetItemText(nRow, 1);
+		m_arrSheet[nRow].m_nMin = _ttoi(m_ctrlListSheet.GetItemText(nRow, 2));
+		m_arrSheet[nRow].m_nMax = _ttoi(m_ctrlListSheet.GetItemText(nRow, 3));
+	}
+	CDialogEx::OnOK();
 }
