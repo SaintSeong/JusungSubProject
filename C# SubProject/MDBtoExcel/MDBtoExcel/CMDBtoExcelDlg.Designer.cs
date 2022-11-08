@@ -189,7 +189,7 @@ namespace MDBtoExcel
             this.listView_Columns.GridLines = true;
             this.listView_Columns.Location = new System.Drawing.Point(17, 262);
             this.listView_Columns.Name = "listView_Columns";
-            this.listView_Columns.Size = new System.Drawing.Size(140, 133);
+            this.listView_Columns.Size = new System.Drawing.Size(140, 114);
             this.listView_Columns.TabIndex = 10;
             this.listView_Columns.UseCompatibleStateImageBehavior = false;
             this.listView_Columns.View = System.Windows.Forms.View.Details;
@@ -197,7 +197,7 @@ namespace MDBtoExcel
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(17, 402);
+            this.progressBar1.Location = new System.Drawing.Point(17, 382);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(275, 36);
             this.progressBar1.TabIndex = 11;
@@ -214,7 +214,7 @@ namespace MDBtoExcel
             // 
             this.button_ChangeColumn.Location = new System.Drawing.Point(175, 262);
             this.button_ChangeColumn.Name = "button_ChangeColumn";
-            this.button_ChangeColumn.Size = new System.Drawing.Size(117, 32);
+            this.button_ChangeColumn.Size = new System.Drawing.Size(117, 55);
             this.button_ChangeColumn.TabIndex = 13;
             this.button_ChangeColumn.Text = "Change Column";
             this.button_ChangeColumn.UseVisualStyleBackColor = true;
@@ -222,9 +222,9 @@ namespace MDBtoExcel
             // 
             // button_convert_Excel
             // 
-            this.button_convert_Excel.Location = new System.Drawing.Point(175, 300);
+            this.button_convert_Excel.Location = new System.Drawing.Point(175, 321);
             this.button_convert_Excel.Name = "button_convert_Excel";
-            this.button_convert_Excel.Size = new System.Drawing.Size(117, 32);
+            this.button_convert_Excel.Size = new System.Drawing.Size(117, 55);
             this.button_convert_Excel.TabIndex = 14;
             this.button_convert_Excel.Text = "Convert";
             this.button_convert_Excel.UseVisualStyleBackColor = true;
@@ -234,7 +234,7 @@ namespace MDBtoExcel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(306, 450);
+            this.ClientSize = new System.Drawing.Size(306, 431);
             this.Controls.Add(this.button_convert_Excel);
             this.Controls.Add(this.button_ChangeColumn);
             this.Controls.Add(this.pictureBox_LOGO);
