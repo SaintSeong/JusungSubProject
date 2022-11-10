@@ -1,0 +1,23 @@
+타임 캡슐에 올리기 : add -> 스테이지 올리기라고도 표현
+타임 캡슐 설정하기 : commit
+
+타임 캡슐 과거로 돌리기
+reset vs revert
+
+충돌 현상 발생 대표 이유 1개
+=> 어떠한 파일이 삭제될려고 하는데 수정 된 타임캡슐이 존재할 때
+과거로 돌아가서 이후의 내용을 삭제하는 것, 정확히 지정된 타임 캡슐 상태로 돌리는 것 : reset -> git reset --hard 
+과거로 돌아가도 이후의 내용은 유지하는 것, 지정된 타임 캡슐 이전 타임 캡슐 상태로 돌리는 것 : revert
+
+sourceTree GUI에서 되돌리기 : revert, 초기화 : reset
+
+https://www.yalco.kr/@git-github/3-1/
+
+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
+
+https://onlywis.tistory.com/2 : 문자열 인코딩 개념 정리(ASCII/ANSI/EUC-KR/CP949/UTF-8/UNICODE)
+https://hahaite.tistory.com/315 : Windows API에서 UTF-8, ANSI(CP949), Unicode 간 변환 개념잡기
+https://icartsh.tistory.com/13 : c/c++에서 문자열 인코딩 변환! 유니코드 멀티바이트 UTF-8 쉽게 변환해보자~!
+https://stackoverflow.com/questions/3298569/difference-between-mbcs-and-utf-8-on-windows : Difference between MBCS and UTF-8 on Windows
+
+https://zadd.tistory.com/52 : INI 파일 활용 하기
