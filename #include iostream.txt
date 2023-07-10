@@ -1,0 +1,26 @@
+#include <iostream>
+#include <vector>
+#include <matplotlibcpp/matplotlibcpp.h>
+
+int main() {
+  // Create the data.
+  std::vector<std::vector<double>> data = {
+    {1, 2, 3},
+    {4, 5, 6},
+    {7, 8, 9}
+  };
+
+  // Create the figure.
+  mpl::figure();
+
+  // Create the contour plot.
+  mpl::contour(data, levels = {1, 2, 3, 4, 5, 6, 7, 8, 9});
+
+  // Save the figure.
+  mpl::savefig("contour.png");
+
+  // Close the figure.
+  mpl::close();
+
+  return 0;
+}
