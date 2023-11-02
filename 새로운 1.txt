@@ -1,0 +1,161 @@
+MFC(마이크로소프트 파운데이션 클래스)에서는 리스트 컨트롤에서 마우스를 사용하여 여러 항목을 드래그하여 선택하는 기능을 활성화할 수 있습니다. 다음은 이를 수행하는 일반적인 가이드입니다.
+
+다이얼로그나 창에서 CListCtrl 개체가 있다고 가정하고 다음 단계를 따릅니다.
+
+리스트 컨트롤 스타일 설정:
+리스트 컨트롤에 LVS_REPORT 스타일이 설정되어 있는지 확인합니다. 이는 일반적으로 상세 리스트 컨트롤에 필요합니다
+DWORD dwStyle = LVS_REPORT | LVS_SHOWSELALWAYS;
+m_listCtrl.ModifyStyle(0, dwStyle);
+
+확장된 선택 활성화:
+리스트 컨트롤에 대한 확장된 선택 모드를 활성화합니다.
+m_listCtrl.SetExtendedStyle(m_listCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_MULTISELECT);
+
+
+마우스 메시지 처리:
+마우스 메시지, 특히 WM_LBUTTONDOWN, WM_MOUSEMOVE, 그리고 WM_LBUTTONUP에 대한 핸들러를 추가합니다. 이러한 핸들러에서 마우스 드래그의 시작 및 종료 위치를 추적하고 해당 범위 내의 항목을 선택할 수 있습니다.
+// 이러한 메시지 핸들러를 다이얼로그나 창 클래스에 추가합니다.
+
+// 헤더 파일 (.h)
+afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+
+// 소스 파일 (.cpp)
+BEGIN_MESSAGE_MAP(CYourDialogClass, CDialog)
+    // ...
+    ON_WM_LBUTTONDOWN()
+    ON_WM_MOUSEMOVE()
+    ON_WM_LBUTTONUP()
+    // ...
+END_MESSAGE_MAP()
+
+void CYourDialogClass::OnLButtonDown(UINT nFlags, CPoint point)
+{
+    // 드래그의 시작점을 저장합니다.
+    m_dragStartPoint = point;
+
+    CDialog::OnLButtonDown(nFlags, point);
+}
+
+void CYourDialogClass::OnMouseMove(UINT nFlags, CPoint point)
+{
+    // 왼쪽 마우스 버튼이 눌린 상태인지 확인합니다.
+    if (nFlags & MK_LBUTTON)
+    {
+        // 선택 사각형을 결정합니다.
+        CRect rect(m_dragStartPoint, point);
+        rect.NormalizeRect();
+
+        // 사각형 내의 항목을 선택합니다.
+        m_listCtrl.SelectItemsInRect(rect);
+    }
+
+    CDialog::OnMouseMove(nFlags, point);
+}
+
+void CYourDialogClass::OnLButtonUp(UINT nFlags, CPoint point)
+{
+    // 드래그 시작점을 재설정합니다.
+    m_dragStartPoint = CPoint(-1, -1);
+
+    CDialog::OnLButtonUp(nFlags, point);
+}
+
+SelectItemsInRect 함수 구현:
+지정된 사각형 내의 항목을 선택하는 함수를 구현합니다.+
+void CYourDialogClass::SelectItemsInRect(const CRect& rect)
+{
+    int nStartItem = m_listCtrl.HitTest(rect.TopLeft(), NULL);
+    int nEndItem = m_listCtrl.HitTest(rect.BottomRight(), NULL);
+
+    if (nStartItem != -1 && nEndItem != -1)
+    {
+        // 이전 선택을 지웁니다.
+        m_listCtrl.SetItemState(-1, 0, LVIS_SELECTED);
+
+        // 지정된 범위 내의 항목을 선택합니다.
+        for (int i = nStartItem; i <= nEndItem; i++)
+        {
+            m_listCtrl.SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
+        }
+    }
+}
+
+
+
+MFC(마이크로소프트 파운데이션 클래스)에서는 CListCtrl 클래스를 사용하여 마우스를 사용하여 목록 컨트롤에서 여러 항목을 드래그하여 선택하는 기능을 구현할 수 있습니다. 이를 위한 일반적인 단계는 다음과 같습니다.
+
+LVS_EX_MULTISELECT 스타일 활성화:
+목록 컨트롤에 LVS_EX_MULTISELECT 스타일이 활성화되어 있는지 확인하십시오. 이것은 리소스 편집기에서 또는 다음 코드를 사용하여 프로그래밍적으로 수행할 수 있습니다.
+// m_listCtrl이 CListCtrl 변수인 경우
+m_listCtrl.ModifyStyle(0, LVS_REPORT | LVS_OWNERDATA | LVS_OWNERDRAWFIXED | LVS_SHOWSELALWAYS);
+m_listCtrl.SetExtendedStyle(m_listCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_MULTISELECT);
+마우스 메시지 처리:
+CListCtrl 파생 클래스에서 OnLButtonDown, OnMouseMove, OnLButtonUp 함수를 재정의합니다.
+void CMyListCtrl::OnLButtonDown(UINT nFlags, CPoint point)
+{
+    // 목록 컨트롤에 포커스 설정
+    SetFocus();
+
+    // 기본 처리 수행
+    CListCtrl::OnLButtonDown(nFlags, point);
+
+    // 마우스 캡처
+    SetCapture();
+
+    // 드래그 시작 지점 초기화
+    m_ptDragStart = point;
+
+    // 모든 항목 선택 해제
+    SetItemState(-1, 0, LVIS_SELECTED);
+}
+
+void CMyListCtrl::OnMouseMove(UINT nFlags, CPoint point)
+{
+    if (GetCapture() == this)
+    {
+        // 선택 사각형 계산
+        CRect rect(m_ptDragStart, point);
+        rect.NormalizeRect();
+
+        // 모든 항목 선택 해제
+        SetItemState(-1, 0, LVIS_SELECTED);
+
+        // 사각형 내의 항목 선택
+        int nItem = -1;
+        while ((nItem = GetNextItem(nItem, LVNI_ALL)) != -1)
+        {
+            CRect itemRect;
+            GetItemRect(nItem, &itemRect, LVIR_BOUNDS);
+
+            if (rect.PtInRect(itemRect.CenterPoint()))
+            {
+                SetItemState(nItem, LVIS_SELECTED, LVIS_SELECTED);
+            }
+        }
+    }
+}
+
+void CMyListCtrl::OnLButtonUp(UINT nFlags, CPoint point)
+{
+    if (GetCapture() == this)
+    {
+        // 마우스 캡처 해제
+        ReleaseCapture();
+    }
+}
+
+사용자 정의 그리기 처리(선택 사항):
+드래그 작업 중에 시각적 피드백을 제공하려면 선택한 항목의 모양을 사용자 정의하려면 OnCustomDraw 함수를 재정의하여 선택적으로 사용자 정의 그리기를 처리할 수 있습니다.
+int CMyListCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+    // 사용자 정의 그리기 활성화
+    ModifyStyle(0, LVS_OWNERDRAWFIXED);
+    return CListCtrl::OnCreate(lpCreateStruct);
+}
+
+void CMyListCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+{
+    // 여기에 사용자 정의 그리기 코드를 추가합니다.
+}
